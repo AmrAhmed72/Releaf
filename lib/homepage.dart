@@ -323,9 +323,9 @@ class HomeContent extends StatelessWidget {
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              //_growItem("assets/spinach.jpg"),
-              //_growItem("assets/potatoes.jpg"),
-              //_growItem("assets/carrots.jpg"),
+              _growItem("assets/spinach.jpg"),
+              _growItem("assets/potatoes.jpg"),
+              _growItem("assets/carrots.jpg"),
             ],
           ),
         ),
