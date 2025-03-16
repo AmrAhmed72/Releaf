@@ -88,7 +88,7 @@ class PlanningScreen extends StatelessWidget {
                       child: ListView(
                         controller: controller,
                         physics: const ClampingScrollPhysics(),
-                        padding: const EdgeInsets.all(15.0), // Uniform 15px padding on all sides
+                        padding:  EdgeInsets.all(15.0), // Uniform 15px padding on all sides
                         children: const [
                           PlanCard(
                             imagePath: 'assets/sweet_basil.png',

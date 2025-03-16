@@ -2,6 +2,7 @@ import 'package:releaf/FavScreen.dart';
 import 'package:releaf/ProfileScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:releaf/my%20garden/garden.dart';
 
 class Homepage extends StatefulWidget {
   final List<Map<String, String>> categories = [
@@ -26,7 +27,7 @@ class _HomepageState extends State<Homepage> {
     const HomeContent(), // Home content (index 0)
     const Placeholder(), // Locations screen (index 1, temporary placeholder)
     const Placeholder(), // Camera screen (index 2, temporary placeholder)
-     FavScreen(),  // Favorites screen (index 3)
+    MyGarden(),  // Favorites screen (index 3)
      ProfileScreen(), // Profile screen (index 4)
   ];
 
