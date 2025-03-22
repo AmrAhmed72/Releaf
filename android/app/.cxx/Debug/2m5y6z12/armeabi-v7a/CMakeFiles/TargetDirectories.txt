@@ -1,0 +1,2 @@
+C:/Users/amrel/OneDrive/Documents/Releaf/android/app/.cxx/Debug/2m5y6z12/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/amrel/OneDrive/Documents/Releaf/android/app/.cxx/Debug/2m5y6z12/armeabi-v7a/CMakeFiles/rebuild_cache.dir

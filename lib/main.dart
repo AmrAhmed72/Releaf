@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:releaf/SplashScreen.dart';
 import 'package:releaf/homepage.dart';
+import 'package:releaf/signup/SignUpScreen.dart';
 import 'PlantDetailScreen.dart';
 
 void main() {
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
       ),
-      home: Homepage(),
+      home: SignUpScreen(),
       //home: PlantDetailScreen(),
     );
   }
