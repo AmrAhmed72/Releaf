@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:releaf/SplashScreen.dart';
-import 'package:releaf/homepage.dart';
-import 'package:releaf/signup/SignUpScreen.dart';
-import 'PlantDetailScreen.dart';
+import 'package:releaf/UI/Home/homepage.dart';
+import 'package:releaf/UI/signup/SignUpScreen.dart';
+import 'UI/Home/PlantDetailScreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
       ),
-      home: SignUpScreen(),
+      home: Homepage(),
       //home: PlantDetailScreen(),
     );
   }

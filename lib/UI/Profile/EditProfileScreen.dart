@@ -34,17 +34,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F5EC),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF609254),
-        title: const Text(
-          'Edit Profile',
-          style: TextStyle(color: Colors.white, fontFamily: 'Inter'),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(50), // Set custom height for the AppBar
+        child: AppBar(
+          backgroundColor: const Color(0xFF609254),
+          elevation: 0, // Remove shadow for a cleaner look
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          title: const Text(
+            'Edit Profile',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Inter',
+              fontSize: 18, // Match the font size of other screens
+              fontWeight: FontWeight.bold, // Match the font weight of other screens
+            ),
+          ),
         ),
       ),
       body: Padding(
