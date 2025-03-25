@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:releaf/UI/my garden/garden.dart';
 import 'package:releaf/UI/Profile/CommunityScreen.dart';
+// Ensure this import is present
+
 // Import models
 import '../../models/category.dart';
 import '../../models/GrowItem.dart';
@@ -12,6 +14,7 @@ import '../../models/CommunityEvent.dart';
 import '../../data/categories.dart';
 import '../../data/GrowItems.dart';
 import '../../data/CommunityEvents.dart';
+import '../Scan/ScanScreen.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -27,7 +30,7 @@ class _HomepageState extends State<Homepage> {
   final List<Widget> _screens = [
     const HomeContent(), // Home content (index 0)
     const Placeholder(), // Locations screen (index 1, temporary placeholder)
-    const Placeholder(), // Camera screen (index 2, temporary placeholder)
+    const Placeholder(), // Camera screen (index 2, will be handled separately)
     MyGarden(), // Favorites screen (index 3)
     ProfileScreen(), // Profile screen (index 4)
   ];
@@ -35,11 +38,16 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     final items = <Widget>[
-      const Icon(Icons.home, size: 30), // Index 0: Home
-      const Icon(Icons.location_on, size: 30), // Index 1: Locations
-      const Icon(Icons.camera_alt, size: 30), // Index 2: Camera
-      const Icon(Icons.favorite, size: 30), // Index 3: Favorites
-      const Icon(Icons.person, size: 30), // Index 4: Profile
+      const Icon(Icons.home, size: 30, color: Color(0xff22160d)), // Index 0: Home
+      const Icon(Icons.location_on, size: 30, color: Color(0xff22160d)), // Index 1: Locations
+      const Icon(Icons.camera_alt, size: 30, color: Color(0xff22160d)), // Index 2: Camera
+      Image.asset(
+        'assets/gardenIcon.png',
+        width: 24,
+        height: 24,
+        fit: BoxFit.contain,
+      ), // Index 3: Favorites
+      const Icon(Icons.person, size: 30, color: Color(0xff22160d)), // Index 4: Profile
     ];
 
     return Scaffold(
@@ -52,9 +60,23 @@ class _HomepageState extends State<Homepage> {
         index: _index,
         items: items,
         onTap: (index) {
-          setState(() {
-            _index = index; // Update the index when a tab is tapped
-          });
+          if (index == 2) {
+            // When the camera tab is tapped, navigate to CameraScreen without the navigation bar
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CameraScreen()),
+            ).then((_) {
+              // After returning from CameraScreen, reset the index to 0 (Home)
+              setState(() {
+                _index = 0;
+              });
+            });
+          } else {
+            // For other tabs, update the index as usual
+            setState(() {
+              _index = index;
+            });
+          }
         },
       ),
     );
@@ -199,17 +221,17 @@ class _HomeContentState extends State<HomeContent> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text("View all", style: TextStyle(color: Colors.green)),
-      Checkbox(
-        value: _isChecked,
-        onChanged: (val) {
-          setState(() {
-            _isChecked = val ?? false;
-          });
-        },
-        checkColor: Colors.white, // Color of the checkmark
-        activeColor: const Color(0xFF609254), // Color when checked
-        side: const BorderSide(color: Color(0xFF4C2B12)), // Border color when unchecked
-      ),
+                Checkbox(
+                  value: _isChecked,
+                  onChanged: (val) {
+                    setState(() {
+                      _isChecked = val ?? false;
+                    });
+                  },
+                  checkColor: Colors.white, // Color of the checkmark
+                  activeColor: const Color(0xFF609254), // Color when checked
+                  side: const BorderSide(color: Color(0xFF4C2B12)), // Border color when unchecked
+                ),
               ],
             ),
           ],
@@ -553,7 +575,7 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   // Community Section
-  Widget _buildCommunitySection(BuildContext context){
+  Widget _buildCommunitySection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -565,12 +587,12 @@ class _HomeContentState extends State<HomeContent> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             GestureDetector(
-            onTap: () {
-            Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const CommunityPage()),
-            );
-            },
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CommunityPage()),
+                );
+              },
               child: Row(
                 children: [
                   const Text(
