@@ -304,7 +304,7 @@ class _CameraScreenState extends State<CameraScreen> {
             // Camera shutter button (only show when camera preview is active)
             if (_imagePath == null)
               Positioned(
-                bottom: 80,
+                bottom: 95, // Adjusted to move the shutter button higher
                 left: MediaQuery.of(context).size.width / 2 - 30,
                 child: GestureDetector(
                   onTap: _capturePhoto, // Call the capture photo function
