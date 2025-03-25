@@ -12,7 +12,7 @@ final List<CommunityEvent> communityEvents = [
   ),
   CommunityEvent(
     title: 'SHAGARHA!',
-    date: '24 June 2025',
+    date: '24 June 2025', 
     description:
     'Cultivation of olive, pomegranate and white mulberry trees on the sides of canals and drains with a length of 12 km in order to reduce high temperatures, raise air quality and absorb carbon dioxide, provided that a tree is planted every 6 meters.',
     link: 'visit their website!',
