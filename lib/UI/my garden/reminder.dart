@@ -148,30 +148,39 @@ class _AddReminderDialogState extends State<AddReminderDialog> {
                 ),
               ),
               const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: List.generate(7, (index) {
-                  final days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _repeatDays[index] = !_repeatDays[index];
-                      });
-                    },
-                    child: CircleAvatar(
-                      radius: 20,
-                      backgroundColor: _repeatDays[index]
-                          ? const Color(0xff609254)
-                          : const Color(0xffe0e0e0),
-                      child: Text(
-                        days[index],
-                        style: TextStyle(
-                          color: _repeatDays[index] ? Colors.white : Colors.black,
+              SizedBox(
+                height: 50, // Adjust height as needed
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: List.generate(7, (index) {
+                      final days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0), // Add spacing between circles
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _repeatDays[index] = !_repeatDays[index];
+                            });
+                          },
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundColor: _repeatDays[index]
+                                ? const Color(0xff609254)
+                                : const Color(0xffe0e0e0),
+                            child: Text(
+                              days[index],
+                              style: TextStyle(
+                                color: _repeatDays[index] ? Colors.white : Colors.black,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  );
-                }),
+                      );
+                    }),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               Align(

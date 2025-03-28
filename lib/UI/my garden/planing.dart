@@ -11,7 +11,7 @@ class PlanningScreen extends StatelessWidget {
       padding: const EdgeInsets.all(15.0),
       children: const [
         PlanCard(
-          imagePath: 'assets/sweet_basil.png',
+          imagePath: 'assets/garlic.jpg',
           plantName: 'Sweet Basil',
           season: 'summer',
         ),
@@ -23,7 +23,7 @@ class PlanningScreen extends StatelessWidget {
         ),
         SizedBox(height: 16),
         PlanCard(
-          imagePath: 'assets/yarrow.png',
+          imagePath: 'assets/garlic.jpg',
           plantName: 'Yarrow',
           season: 'summer',
         ),
@@ -49,14 +49,16 @@ class PlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 130,
+
       child: Card(
         elevation: 2,
+
         color: const Color(0xffeef0e2),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(10),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

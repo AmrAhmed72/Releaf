@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     // Initialize animation controller (2.5 seconds total)
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2500),
+      duration: const Duration(milliseconds: 2000),
     );
 
     // Define animations
@@ -50,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     _controller.forward();
 
     // Navigate to Homepage after 2.5 seconds
-    Timer(const Duration(milliseconds: 3500), () {
+    Timer(const Duration(milliseconds: 2800), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => Homepage()),
       );

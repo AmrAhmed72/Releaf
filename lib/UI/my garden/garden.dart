@@ -76,19 +76,19 @@ class _MyGardenState extends State<MyGarden> {
           padding: const EdgeInsets.all(15.0),
           children: const [
             PlanCard(
-              imagePath: 'assets/sweet_basil.png',
+              imagePath: 'assets/garlic.jpg',
               plantName: 'Sweet Basil',
               season: 'summer',
             ),
             SizedBox(height: 16),
             PlanCard(
-              imagePath: 'assets/potato.png',
+              imagePath: 'assets/tomato.jpg',
               plantName: 'Potato',
               season: 'summer',
             ),
             SizedBox(height: 16),
             PlanCard(
-              imagePath: 'assets/yarrow.png',
+              imagePath: 'assets/garlic.jpg',
               plantName: 'Yarrow',
               season: 'summer',
             ),
@@ -176,7 +176,7 @@ class _MyGardenState extends State<MyGarden> {
             fit: BoxFit.cover,
           ),
           DraggableScrollableSheet(
-            initialChildSize: 0.7,
+            initialChildSize: 0.8,
             minChildSize: 0.1,
             maxChildSize: 1,
             builder: (context, controller) => ClipRRect(

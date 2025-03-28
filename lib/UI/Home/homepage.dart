@@ -441,8 +441,8 @@ class _HomeContentState extends State<HomeContent> {
         shadows: [
           BoxShadow(
             color: Color(0x3F4C2B12),
-            blurRadius: 4,
-            offset: Offset(0, 4),
+            blurRadius: 2,
+
             spreadRadius: 0,
           )
         ],
