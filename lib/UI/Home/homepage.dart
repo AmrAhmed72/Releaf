@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:releaf/UI/my garden/garden.dart';
 import 'package:releaf/UI/Profile/CommunityScreen.dart';
-// Ensure this import is present
+import '../Scan/ScanScreen.dart'; // CameraScreen
 
 // Import models
 import '../../models/category.dart';
@@ -14,7 +14,6 @@ import '../../models/CommunityEvent.dart';
 import '../../data/categories.dart';
 import '../../data/GrowItems.dart';
 import '../../data/CommunityEvents.dart';
-import '../Scan/ScanScreen.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -61,7 +60,7 @@ class _HomepageState extends State<Homepage> {
         items: items,
         onTap: (index) {
           if (index == 2) {
-            // When the camera tab is tapped, navigate to CameraScreen without the navigation bar
+            // When the camera tab is tapped, navigate to CameraScreen
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const CameraScreen()),
