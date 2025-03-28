@@ -6,6 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'snap_tips_dialog.dart'; // Import the utility file
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -25,6 +26,12 @@ class _CameraScreenState extends State<CameraScreen> {
   void initState() {
     super.initState();
     _initializeCamera();
+    // Show the Snap Tips dialog as soon as the screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showSnapTipsDialog(context, onContinue: () {
+        // No navigation needed, just close the dialog
+      });
+    });
   }
 
   Future<void> _initializeCamera() async {
@@ -68,11 +75,6 @@ class _CameraScreenState extends State<CameraScreen> {
       setState(() {
         _imagePath = imagePath; // Store the path of the captured image
       });
-
-      print("Photo captured and saved to: $imagePath");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Photo captured successfully")),
-      );
     } catch (e) {
       print("Error capturing photo: $e");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -93,10 +95,6 @@ class _CameraScreenState extends State<CameraScreen> {
         setState(() {
           _imagePath = pickedFile.path; // Store the path of the selected image
         });
-        print("Image selected from gallery: $_imagePath");
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Image selected successfully")),
-        );
       } else {
         print("No image selected");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -198,9 +196,9 @@ class _CameraScreenState extends State<CameraScreen> {
                 child: CustomDashedBorder(
                   width: 200,
                   height: 200,
-                  strokeWidth: 2,
-                  dashLength: 10,
-                  dashGap: 5,
+                  strokeWidth:5,
+                  dashLength: 50,
+                  dashGap: 80,
                   color: Colors.green,
                   cornerRadius: 10,
                   child: const Center(
@@ -293,8 +291,10 @@ class _CameraScreenState extends State<CameraScreen> {
                     IconButton(
                       icon: const Icon(Icons.help_outline, color: Colors.white),
                       onPressed: () {
-                        print("Snap Tips button tapped");
-                        // Add snap tips functionality
+                        // Show the Snap Tips dialog from within CameraScreen
+                        showSnapTipsDialog(context, onContinue: () {
+                          // No navigation needed here, just close the dialog
+                        });
                       },
                     ),
                   ],
@@ -304,7 +304,7 @@ class _CameraScreenState extends State<CameraScreen> {
             // Camera shutter button (only show when camera preview is active)
             if (_imagePath == null)
               Positioned(
-                bottom: 95, // Adjusted to move the shutter button higher
+                bottom: 100, // Adjusted to move the shutter button higher
                 left: MediaQuery.of(context).size.width / 2 - 30,
                 child: GestureDetector(
                   onTap: _capturePhoto, // Call the capture photo function
