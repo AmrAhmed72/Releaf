@@ -4,6 +4,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:releaf/UI/my garden/garden.dart';
 import 'package:releaf/UI/Profile/CommunityScreen.dart';
 import '../Scan/ScanScreen.dart'; // CameraScreen
+import '../map/MapScreen.dart'; // Add MapScreen import
 
 // Import models
 import '../../models/category.dart';
@@ -28,7 +29,7 @@ class _HomepageState extends State<Homepage> {
   // List of screens to navigate to
   final List<Widget> _screens = [
     const HomeContent(), // Home content (index 0)
-    const Placeholder(), // Locations screen (index 1, temporary placeholder)
+    const MapScreen(), // Locations screen (index 1)
     const Placeholder(), // Camera screen (index 2, will be handled separately)
     MyGarden(), // Favorites screen (index 3)
     ProfileScreen(), // Profile screen (index 4)
@@ -440,8 +441,8 @@ class _HomeContentState extends State<HomeContent> {
         shadows: [
           BoxShadow(
             color: Color(0x3F4C2B12),
-            blurRadius: 2,
-
+            blurRadius: 4,
+            offset: Offset(0, 4),
             spreadRadius: 0,
           )
         ],
