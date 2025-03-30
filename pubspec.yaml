@@ -75,6 +75,7 @@ flutter_launcher_icons:
 
 flutter_native_splash:
    color: "#F4F5EC"  # Your background color
+   #image: "assets/Releaf.png"
     # Your standalone logo
    android: true
    ios: true

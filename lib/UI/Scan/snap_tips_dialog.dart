@@ -14,6 +14,7 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
       contentPadding: const EdgeInsets.all(20),
       content: SizedBox(
         height: dialogHeight, // Set the dialog height to 70% of the screen
+
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween, // Distribute content evenly
           children: [
@@ -59,7 +60,7 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
                       right: 0,
                       child: Container(
                         width: 40, // Proportional to the 200x200 correct snap
-                        height: 40,
+                        height: 60,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.green,
@@ -78,6 +79,7 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
             // Row of three incorrect snaps (below the correct snap)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
               children: [
                 // Too close (with red X)
                 Column(
