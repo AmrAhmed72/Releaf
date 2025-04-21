@@ -41,6 +41,7 @@ dependencies:
   latlong2: ^0.9.1
   http: ^1.1.0
   geolocator: ^12.0.0
+  cached_network_image: ^3.3.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -75,7 +76,7 @@ flutter:
 flutter_launcher_icons:
    android: true
    ios: true
-   image_path: "assets/logo.png"
+   image_path: "assets/NewIcon.png"
 
 flutter_native_splash:
    color: "#F4F5EC"  # Your background color

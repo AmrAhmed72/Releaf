@@ -1,171 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../models/plant.dart';
 
 class PlantDetailScreen extends StatelessWidget {
-  PlantDetailScreen({super.key});
+  final Plant plant;
 
-  // Define the plant data as a list (for now, just Garlic)
-  final List<Plant> plants = [
-    Plant(
-      title: 'Garlic',
-      headerImage: 'assets/garlic.jpg',
-      types: [
-        PlantType(name: 'Italian garlic', imageUrl: 'assets/Rectangle 58.png'),
-        PlantType(name: 'Solo garlic', imageUrl: 'assets/Rectangle 59.png'),
-        PlantType(name: 'Godavari garlic', imageUrl: 'assets/Rectangle 60.png'),
-        PlantType(name: 'Shweta garlic', imageUrl: 'assets/Rectangle 61.png'),
-        PlantType(name: 'Creole garlic', imageUrl: 'assets/Rectangle 58.png'),
-      ],
-      tabs: {
-        'description': 'A herb growing from a strongly aromatic, rounded bulb composed of around 10 to 20 cloves covered in a papery coat. The long, sword-shaped leaves are attached to an underground stem and the greenish-white or pinkish flowers grow in dense, spherical clusters atop a flower stalk.',
-        'suitable_location': 'Well-drained areas with full sun exposure.',
-        'soil_preparation': 'Loosen the soil and mix in compost.',
-        'growth_timeline': 'Plant in fall, harvest in summer (6-9 months).',
-      },
-      conditions: Conditions(
-        temperature: '20° - 38°',
-        sunlight: 'Full sun',
-        soil: 'Potting soil mix',
-        hardinessZones: '3-11',
-      ),
-    ),
-  ];
+  const PlantDetailScreen({super.key, required this.plant});
 
   @override
   Widget build(BuildContext context) {
-    // For this single screen, we'll use the first plant (Garlic)
-    final plant = plants[0];
-
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(35), // Reduced height for a small AppBar
+        preferredSize: const Size.fromHeight(35),
         child: AppBar(
           backgroundColor: const Color(0xFFF4F5EC),
-          elevation: 0, // No shadow for a flat design
+          elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {
-              Navigator.pop(context); // Navigate back to the previous screen
+              Navigator.pop(context);
             },
           ),
           title: Text(
-            plant.title,
+            plant.name,
             style: const TextStyle(
-              fontSize: 18, // Smaller font size for a compact look
+              fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
           ),
-          centerTitle: true, // Center the title
+          centerTitle: true,
         ),
       ),
-
       backgroundColor: const Color(0xFFF4F5EC),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Image
+            // Plant Image
             Container(
               height: 210,
               width: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(plant.headerImage),
-                  fit: BoxFit.cover,
-                ),
-              ),
+              child: plant.imageUrls.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: plant.imageUrls.first,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF609254),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => const Center(
+                        child: Text(
+                          'No Image Available',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ),
+                    )
+                  : const Center(
+                      child: Text(
+                        'No Image Available',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ),
             ),
             Padding(
               padding: const EdgeInsets.all(20),
               child: Text(
-                plant.title,
+                plant.name,
                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
-            // Types Section
+            // Description Section
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
-                'Types',
+                'Description',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-
-              ),
-
-            ),
-            SizedBox(height: 8),
-            SizedBox(
-              height: 110,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                itemCount: plant.types.length,
-                itemBuilder: (context, index) {
-                  final type = plant.types[index];
-                  return PlantTypeCard(imageUrl: type.imageUrl, label: type.name);
-                },
               ),
             ),
-            // Tabs Section with constrained height
-            SizedBox(
-              height: 200,
-              child: DefaultTabController(
-                length: 4,
-                child: Column(
-                  children: [
-                    Container(
-                      color: const Color(0xE2DED0),
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: TabBar(
-                        isScrollable: true,
-                        labelColor: Colors.green,
-                        unselectedLabelColor: Colors.grey,
-                        indicatorColor: Colors.green,
-                        labelPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        tabAlignment: TabAlignment.start,
-                        tabs: const [
-                          CustomTab(text: 'Description'),
-                          CustomTab(text: 'Suitable location'),
-                          CustomTab(text: 'Soil preparation'),
-                          CustomTab(text: 'Growth timeline'),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: TabBarView(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Text(
-                              plant.tabs['description'] ?? '',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              plant.tabs['suitable_location'] ?? '',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              plant.tabs['soil_preparation'] ?? '',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              plant.tabs['growth_timeline'] ?? '',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                plant.description,
+                style: const TextStyle(fontSize: 16),
               ),
             ),
             // Conditions Section
@@ -183,27 +101,87 @@ class PlantDetailScreen extends StatelessWidget {
                   ConditionRow(
                     icon: Icons.thermostat,
                     label: 'Temperature',
-                    value: plant.conditions.temperature,
+                    value: plant.temperature,
                   ),
                   const SizedBox(height: 8.0),
                   ConditionRow(
                     icon: Icons.wb_sunny,
                     label: 'Sunlight',
-                    value: plant.conditions.sunlight,
+                    value: plant.sunlight,
                   ),
                   const SizedBox(height: 8.0),
                   ConditionRow(
                     icon: Icons.spa,
                     label: 'Soil',
-                    value: plant.conditions.soil,
+                    value: plant.soil,
                   ),
                   const SizedBox(height: 8.0),
                   ConditionRow(
                     icon: Icons.landscape,
                     label: 'Hardiness Zones',
-                    value: plant.conditions.hardinessZones,
+                    value: plant.hardinessZones,
+                  ),
+                  const SizedBox(height: 8.0),
+                  ConditionRow(
+                    icon: Icons.water_drop,
+                    label: 'Soil pH',
+                    value: plant.soil_ph,
+                  ),
+                  const SizedBox(height: 8.0),
+                  ConditionRow(
+                    icon: Icons.terrain,
+                    label: 'Soil Type',
+                    value: plant.soil_type,
                   ),
                 ],
+              ),
+            ),
+            // Growth Timeline Section
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Text(
+                'Growth Timeline',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: [
+                  ConditionRow(
+                    icon: Icons.calendar_today,
+                    label: 'Sowing',
+                    value: plant.day_sowing,
+                  ),
+                  const SizedBox(height: 8.0),
+                  ConditionRow(
+                    icon: Icons.local_florist,
+                    label: 'Sprouting',
+                    value: plant.day_sprout,
+                  ),
+                  const SizedBox(height: 8.0),
+                  ConditionRow(
+                    icon: Icons.local_florist,
+                    label: 'Vegetative Growth',
+                    value: plant.day_vegetative,
+                  ),
+                ],
+              ),
+            ),
+            // Season Section
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Text(
+                'Season',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: ConditionRow(
+                icon: Icons.event,
+                label: 'Season',
+                value: plant.season,
               ),
             ),
             // Buttons
@@ -212,7 +190,6 @@ class PlantDetailScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Planning to grow button
                   Container(
                     margin: const EdgeInsets.only(right: 16.0),
                     child: ElevatedButton(
@@ -237,7 +214,6 @@ class PlantDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Growing it button
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
@@ -264,57 +240,6 @@ class PlantDetailScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-// Custom Tab Widget to ensure full text visibility
-class CustomTab extends StatelessWidget {
-  final String text;
-
-  const CustomTab({super.key, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Tab(
-      child: Text(
-        text,
-        style: const TextStyle(fontSize: 16),
-        overflow: TextOverflow.visible,
-        softWrap: false,
-      ),
-    );
-  }
-}
-
-// Custom widget for plant types
-class PlantTypeCard extends StatelessWidget {
-  final String imageUrl;
-  final String label;
-
-  const PlantTypeCard({super.key, required this.imageUrl, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 16.0),
-      child: Column(
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              image: DecorationImage(
-                image: AssetImage(imageUrl),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(label, style: const TextStyle(fontSize: 14)),
-        ],
       ),
     );
   }
@@ -363,42 +288,4 @@ class ConditionRow extends StatelessWidget {
       ),
     );
   }
-}
-
-// Plant model classes
-class Plant {
-  final String title;
-  final String headerImage;
-  final List<PlantType> types;
-  final Map<String, String> tabs;
-  final Conditions conditions;
-
-  Plant({
-    required this.title,
-    required this.headerImage,
-    required this.types,
-    required this.tabs,
-    required this.conditions,
-  });
-}
-
-class PlantType {
-  final String name;
-  final String imageUrl;
-
-  PlantType({required this.name, required this.imageUrl});
-}
-
-class Conditions {
-  final String temperature;
-  final String sunlight;
-  final String soil;
-  final String hardinessZones;
-
-  Conditions({
-    required this.temperature,
-    required this.sunlight,
-    required this.soil,
-    required this.hardinessZones,
-  });
 }

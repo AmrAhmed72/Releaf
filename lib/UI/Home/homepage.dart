@@ -1,20 +1,29 @@
-import 'package:releaf/UI/Profile/ProfileScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:releaf/UI/Profile/ProfileScreen.dart';
 import 'package:releaf/UI/my garden/garden.dart';
 import 'package:releaf/UI/Profile/CommunityScreen.dart';
-import '../Scan/ScanScreen.dart'; // CameraScreen
-import '../map/MapScreen.dart'; // Add MapScreen import
+import 'package:releaf/UI/Scan/ScanScreen.dart';
+import 'package:releaf/UI/map/MapScreen.dart';
+import 'package:releaf/screens/categories_screen.dart';
+import 'package:releaf/UI/Home/PlantDetailScreen.dart';
+import 'package:releaf/screens/category_detail_screen.dart';
+import 'package:releaf/screens/all_plants_screen.dart';
+
+
 
 // Import models
-import '../../models/category.dart';
-import '../../models/GrowItem.dart';
-import '../../models/CommunityEvent.dart';
+import 'package:releaf/models/category.dart';
+import 'package:releaf/models/GrowItem.dart';
+import 'package:releaf/models/CommunityEvent.dart';
+import 'package:releaf/models/plant.dart';
 
 // Import data
-import '../../data/categories.dart';
-import '../../data/GrowItems.dart';
-import '../../data/CommunityEvents.dart';
+import 'package:releaf/data/categories.dart';
+import 'package:releaf/data/GrowItems.dart';
+import 'package:releaf/data/CommunityEvents.dart';
+import 'package:releaf/services/api_service.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -93,6 +102,32 @@ class HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContent> {
   bool _isChecked = false;
+  final ApiService _apiService = ApiService();
+  late Future<List<Plant>> _plantsFuture;
+  String _selectedFilterType = 'Season'; // Track filter type (Season, Soil, Sunlight)
+  String _selectedSeason = 'Summer';
+  String _selectedSoil = 'Loamy';
+  String _selectedSunlight = 'Full Sun';
+
+  @override
+  void initState() {
+    super.initState();
+    _plantsFuture = _apiService.getAllPlants();
+  }
+
+  List<Plant> _filterPlants(List<Plant> plants) {
+    return plants.where((plant) {
+      if (_selectedFilterType == 'Season') {
+        // Handle complex season values (e.g., "Spring to Summer" includes "Spring" or "Summer")
+        return plant.season.toLowerCase().contains(_selectedSeason.toLowerCase());
+      } else if (_selectedFilterType == 'Soil') {
+        return plant.soil.toLowerCase().contains(_selectedSoil.toLowerCase());
+      } else if (_selectedFilterType == 'Sunlight') {
+        return plant.sunlight.toLowerCase().contains(_selectedSunlight.toLowerCase());
+      }
+      return true; // Default: no filter
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -228,9 +263,9 @@ class _HomeContentState extends State<HomeContent> {
                       _isChecked = val ?? false;
                     });
                   },
-                  checkColor: Colors.white, // Color of the checkmark
-                  activeColor: const Color(0xFF609254), // Color when checked
-                  side: const BorderSide(color: Color(0xFF4C2B12)), // Border color when unchecked
+                  checkColor: Colors.white,
+                  activeColor: const Color(0xFF609254),
+                  side: const BorderSide(color: Color(0xFF4C2B12)),
                 ),
               ],
             ),
@@ -265,8 +300,12 @@ class _HomeContentState extends State<HomeContent> {
             ),
             GestureDetector(
               onTap: () {
-                print("View All Categories tapped");
-                // Add navigation to a full categories screen if needed
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CategoriesScreen(),
+                  ),
+                );
               },
               child: Row(
                 children: [
@@ -307,56 +346,65 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Widget _categoryCard(Category category) {
-    bool isNetworkImage = category.imagePath.startsWith('http');
-
-    return Container(
-      width: 130,
-      height: 130,
-      clipBehavior: Clip.antiAlias,
-      decoration: ShapeDecoration(
-        color: const Color(0xFFEEF0E2),
-        shape: RoundedRectangleBorder(
-          side: const BorderSide(width: 0.50, color: Color(0xFF9F8571)),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        shadows: const [
-          BoxShadow(
-            color: Color(0x3F4C2B12),
-            blurRadius: 4,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            left: 5,
-            top: 20,
-            child: Text(
-              category.title,
-              style: const TextStyle(
-                color: Color(0xFF4C2B12),
-                fontSize: 16,
-                fontFamily: 'Laila',
-                fontWeight: FontWeight.w500,
-              ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CategoryDetailScreen(
+              categoryId: category.id,
+              categoryName: category.name,
             ),
           ),
-          Positioned(
-            child: Container(
-              width: 161.81,
-              height: 227,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: isNetworkImage
-                      ? NetworkImage(category.imagePath)
-                      : AssetImage(category.imagePath) as ImageProvider,
-                  fit: BoxFit.cover,
+        );
+      },
+      child: Container(
+        width: 130,
+        height: 130,
+        clipBehavior: Clip.antiAlias,
+        decoration: ShapeDecoration(
+          color: const Color(0xFFEEF0E2),
+          shape: RoundedRectangleBorder(
+            side: const BorderSide(width: 0.50, color: Color(0xFF9F8571)),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          shadows: const [
+            BoxShadow(
+              color: Color(0x3F4C2B12),
+              blurRadius: 4,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              left: 5,
+              top: 20,
+              child: Text(
+                category.title,
+                style: const TextStyle(
+                  color: Color(0xFF4C2B12),
+                  fontSize: 16,
+                  fontFamily: 'Laila',
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
-          ),
-        ],
+            Positioned(
+              child: Container(
+                width: 161.81,
+                height: 227,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(category.imagePath),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -375,19 +423,86 @@ class _HomeContentState extends State<HomeContent> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(width: 8),
+                // Filter Type Dropdown
                 DropdownButton<String>(
-                  value: "Summer",
-                  items: ["Summer", "Winter", "Spring"].map((month) {
-                    return DropdownMenuItem(value: month, child: Text(month));
+                  value: _selectedFilterType,
+                  items: ['Season', 'Soil', 'Sunlight'].map((filterType) {
+                    return DropdownMenuItem(
+                      value: filterType,
+                      child: Text(filterType),
+                    );
                   }).toList(),
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _selectedFilterType = value;
+                      });
+                    }
+                  },
                 ),
+                const SizedBox(width: 8),
+                // Dynamic Filter Value Dropdown
+                if (_selectedFilterType == 'Season')
+                  DropdownButton<String>(
+                    value: _selectedSeason,
+                    items: ['Summer', 'Winter', 'Spring', 'All Year'].map((season) {
+                      return DropdownMenuItem(
+                        value: season,
+                        child: Text(season),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedSeason = value;
+                        });
+                      }
+                    },
+                  ),
+                if (_selectedFilterType == 'Soil')
+                  DropdownButton<String>(
+                    value: _selectedSoil,
+                    items: ['Loamy', 'Sandy', 'Well-drained', 'Moist'].map((soil) {
+                      return DropdownMenuItem(
+                        value: soil,
+                        child: Text(soil),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedSoil = value;
+                        });
+                      }
+                    },
+                  ),
+                if (_selectedFilterType == 'Sunlight')
+                  DropdownButton<String>(
+                    value: _selectedSunlight,
+                    items: ['Full Sun', 'Partial Sun'].map((sunlight) {
+                      return DropdownMenuItem(
+                        value: sunlight,
+                        child: Text(sunlight),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedSunlight = value;
+                        });
+                      }
+                    },
+                  ),
               ],
             ),
             GestureDetector(
               onTap: () {
-                print("View All What to Grow tapped");
-                // Add navigation to a full "What to grow" screen if needed
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AllPlantsScreen(),
+                  ),
+                );
               },
               child: Row(
                 children: [
@@ -413,141 +528,132 @@ class _HomeContentState extends State<HomeContent> {
         ),
         const SizedBox(height: 8),
         SizedBox(
-          height: 158, // Adjusted height to match the new card design (158)
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: growItems.map((growItem) {
-              return Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: _growItem(growItem),
+          height: 158,
+          child: FutureBuilder<List<Plant>>(
+            future: _plantsFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF609254),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    'Error: ${snapshot.error}',
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                );
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No plants found.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                );
+              }
+
+              // Apply filter
+              final filteredPlants = _filterPlants(snapshot.data!);
+              print('Filtered plants: ${filteredPlants.length}'); // Debug log
+
+              if (filteredPlants.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No plants available for this filter.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: filteredPlants.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: _growItem(filteredPlants[index]),
+                  );
+                },
               );
-            }).toList(),
+            },
           ),
         ),
       ],
     );
   }
 
-  Widget _growItem(GrowItem growItem) {
-    return Container(
-      width: 165,
-      height: 158,
-      decoration: ShapeDecoration(
-        color: Color(0xFFEEF0E2),
-        shape: RoundedRectangleBorder(
-          side: BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
-          borderRadius: BorderRadius.circular(30),
+  Widget _growItem(Plant plant) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to PlantDetailScreen when the plant is tapped
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PlantDetailScreen(plant: plant),
+          ),
+        );
+      },
+      child: Container(
+        width: 165,
+        height: 158,
+        decoration: ShapeDecoration(
+          color: const Color(0xFFEEF0E2),
+          shape: RoundedRectangleBorder(
+            side: const BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
+            borderRadius: BorderRadius.circular(30),
+          ),
+          shadows: const [
+            BoxShadow(
+              color: Color(0x3F4C2B12),
+              blurRadius: 4,
+              offset: Offset(0, 4),
+              spreadRadius: 0,
+            )
+          ],
         ),
-        shadows: [
-          BoxShadow(
-            color: Color(0x3F4C2B12),
-            blurRadius: 4,
-            offset: Offset(0, 4),
-            spreadRadius: 0,
-          )
-        ],
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            left: 0,
-            top: 0,
-            child: Container(
-              width: 165,
-              height: 106,
-              clipBehavior: Clip.antiAlias,
-              decoration: ShapeDecoration(
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
+        child: Stack(
+          children: [
+            Positioned(
+              left: 0,
+              top: 0,
+              child: Container(
+                width: 165,
+                height: 106,
+                clipBehavior: Clip.antiAlias,
+                decoration: ShapeDecoration(
+                  shape: RoundedRectangleBorder(
+                    side: const BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    ),
                   ),
                 ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 163,
-                    height: 106,
-                    decoration: ShapeDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(growItem.imagePath), // Use AssetImage for local assets
-                        fit: BoxFit.fill,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            left: 133,
-            top: 124,
-            child: GestureDetector(
-              onTap: () {
-                print("${growItem.title} + button tapped");
-                // Add functionality for the "+" button (e.g., add to garden)
-              },
-              child: Container(
-                width: 15,
-                height: 15,
-                child: Stack(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Positioned(
-                      left: 0,
-                      top: 0,
-                      child: Container(
-                        width: 15,
-                        height: 15,
-                        decoration: ShapeDecoration(
-                          color: Color(0xFF609254),
-                          shape: OvalBorder(),
+                    Container(
+                      width: 163,
+                      height: 106,
+                      decoration: ShapeDecoration(
+                        image: DecorationImage(
+                          image: plant.imageUrls.isNotEmpty
+                              ? CachedNetworkImageProvider(plant.imageUrls.first)
+                              : const AssetImage('assets/placeholder_plant.png') as ImageProvider,
+                          fit: BoxFit.cover,
                         ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 3,
-                      top: 3,
-                      child: Container(
-                        width: 9,
-                        height: 9,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              left: 3.75,
-                              top: -0,
-                              child: Container(
-                                width: 1.50,
-                                height: 9,
-                                decoration: ShapeDecoration(
-                                  color: Color(0xFFEEF0E2),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              left: 9,
-                              top: 3.75,
-                              child: Transform(
-                                transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(1.57),
-                                child: Container(
-                                  width: 1.50,
-                                  height: 9,
-                                  decoration: ShapeDecoration(
-                                    color: Color(0xFFEEF0E2),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                        shape: RoundedRectangleBorder(
+                          side: const BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
                         ),
                       ),
                     ),
@@ -555,26 +661,99 @@ class _HomeContentState extends State<HomeContent> {
                 ),
               ),
             ),
-          ),
-          Positioned(
-            left: 15.50,
-            top: 117,
-            child: Text(
-              growItem.title,
-              style: const TextStyle(
-                color: Color(0xFF609254),
-                fontSize: 18,
-                fontFamily: 'Laila',
-                height: 0,
+            Positioned(
+              left: 133,
+              top: 124,
+              child: GestureDetector(
+                onTap: () {
+                  // Add functionality for the "+" button
+                },
+                child: Container(
+                  width: 15,
+                  height: 15,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        left: 0,
+                        top: 0,
+                        child: Container(
+                          width: 15,
+                          height: 15,
+                          decoration: const ShapeDecoration(
+                            color: Color(0xFF609254),
+                            shape: OvalBorder(),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        left: 3,
+                        top: 3,
+                        child: Container(
+                          width: 9,
+                          height: 9,
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                left: 3.75,
+                                top: 0,
+                                child: Container(
+                                  width: 1.50,
+                                  height: 9,
+                                  decoration: ShapeDecoration(
+                                    color: const Color(0xFFEEF0E2),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(2),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                left: 9,
+                                top: 3.75,
+                                child: Transform(
+                                  transform: Matrix4.identity()
+                                    ..translate(0.0, 0.0)
+                                    ..rotateZ(1.57),
+                                  child: Container(
+                                    width: 1.50,
+                                    height: 9,
+                                    decoration: ShapeDecoration(
+                                      color: const Color(0xFFEEF0E2),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(2),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
-        ],
+            Positioned(
+              left: 15.50,
+              top: 117,
+              child: Text(
+                plant.name,
+                style: const TextStyle(
+                  color: Color(0xFF609254),
+                  fontSize: 18,
+                  fontFamily: 'Laila',
+                  height: 0,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // Community Section
   Widget _buildCommunitySection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

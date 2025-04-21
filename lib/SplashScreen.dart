@@ -2,18 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:releaf/UI/Home/homepage.dart'; // Import your existing homepage
 import 'dart:async';
 
-
-
-
-
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
-
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _logoOpacity;

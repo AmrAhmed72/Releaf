@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:releaf/services/api_service.dart';
+import 'package:releaf/models/campaign.dart';
 
-// Import models and data
-import '../../models/CommunityEvent.dart';
-import '../../data/CommunityEvents.dart';
-
-class CommunityPage extends StatelessWidget {
+class CommunityPage extends StatefulWidget {
   const CommunityPage({super.key});
+
+  @override
+  State<CommunityPage> createState() => _CommunityPageState();
+}
+
+class _CommunityPageState extends State<CommunityPage> {
+  late Future<List<Campaign>> _campaignsFuture;
+  final ApiService _apiService = ApiService();
+
+  @override
+  void initState() {
+    super.initState();
+    _campaignsFuture = _apiService.getAllCampaigns();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F5EC),
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50), // Set custom height for the AppBar
+        preferredSize: const Size.fromHeight(50),
         child: AppBar(
           backgroundColor: const Color(0xFF609254),
           elevation: 0,
@@ -43,7 +55,7 @@ class CommunityPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Recent",
+                "Recent Campaigns",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -51,13 +63,27 @@ class CommunityPage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Expanded(
-                child: ListView.builder(
-                  itemCount: communityEvents.length,
-                  itemBuilder: (context, index) {
-                    final event = communityEvents[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: _communityCard(event),
+                child: FutureBuilder<List<Campaign>>(
+                  future: _campaignsFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('No campaigns available'));
+                    }
+
+                    final campaigns = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: campaigns.length,
+                      itemBuilder: (context, index) {
+                        final campaign = campaigns[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: _campaignCard(campaign),
+                        );
+                      },
                     );
                   },
                 ),
@@ -69,7 +95,7 @@ class CommunityPage extends StatelessWidget {
     );
   }
 
-  Widget _communityCard(CommunityEvent event) {
+  Widget _campaignCard(Campaign campaign) {
     return Container(
       width: 380,
       height: 282,
@@ -84,13 +110,12 @@ class CommunityPage extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Text content
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    event.title,
+                    campaign.title,
                     style: const TextStyle(
                       color: Color(0xFFC3824D),
                       fontSize: 16,
@@ -100,7 +125,16 @@ class CommunityPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    event.date,
+                    campaign.date,
+                    style: const TextStyle(
+                      color: Color(0xFF4C2B12),
+                      fontSize: 14,
+                      fontFamily: 'Laila',
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    campaign.location,
                     style: const TextStyle(
                       color: Color(0xFF4C2B12),
                       fontSize: 14,
@@ -110,7 +144,7 @@ class CommunityPage extends StatelessWidget {
                   const SizedBox(height: 12),
                   Expanded(
                     child: Text(
-                      event.description,
+                      campaign.description,
                       style: const TextStyle(
                         color: Color(0xFF4C2B12),
                         fontSize: 12,
@@ -123,11 +157,11 @@ class CommunityPage extends StatelessWidget {
                   const SizedBox(height: 12),
                   GestureDetector(
                     onTap: () {
-                      print("Visit website tapped for ${event.title}");
-                      // Add functionality to open the website (e.g., using url_launcher)
+                      // TODO: Implement link opening functionality
+                      print("Visit website tapped for ${campaign.title}");
                     },
                     child: Text(
-                      event.link,
+                      campaign.link,
                       style: const TextStyle(
                         color: Color(0xFF609254),
                         fontSize: 12,
@@ -139,25 +173,21 @@ class CommunityPage extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16),
-            // Decorative icons (sun, tree, clouds)
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Sun icon
                 Icon(
                   Icons.wb_sunny,
                   color: Colors.orange,
                   size: 32,
                 ),
                 const SizedBox(height: 16),
-                // Tree icon
                 Icon(
                   Icons.park,
                   color: Colors.green,
                   size: 32,
                 ),
                 const SizedBox(height: 16),
-                // Clouds icon (using a stack to create two clouds)
                 Stack(
                   children: [
                     Icon(
