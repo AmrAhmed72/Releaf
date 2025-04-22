@@ -79,7 +79,6 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
             // Row of three incorrect snaps (below the correct snap)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
               children: [
                 // Too close (with red X)
                 Column(
@@ -88,8 +87,8 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
                       alignment: Alignment.center,
                       children: [
                         Container(
-                          width: 63, // False snap width
-                          height: 63, // False snap height
+                          width: 56, // Reduced from 63 to 56 (63 - 7)
+                          height: 56, // Reduced from 63 to 56
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
@@ -100,8 +99,8 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
                           child: ClipOval(
                             child: Image.asset(
                               "assets/too close.png", // Replace with your too close image
-                              width: 63, // Match the container size
-                              height: 63,
+                              width: 56, // Match the container size
+                              height: 56,
                               fit: BoxFit.cover, // Ensure the image fills the circle
                             ),
                           ),
@@ -110,8 +109,8 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
                           top: 0,
                           right: 0,
                           child: Container(
-                            width: 18, // Slightly smaller to be proportional to 63x63
-                            height: 18,
+                            width: 16, // Reduced from 18 to 16 (proportional scaling)
+                            height: 16,
                             decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.red,
@@ -119,18 +118,18 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
                             child: const Icon(
                               Icons.close,
                               color: Colors.white,
-                              size: 12, // Proportional to the overlay size
+                              size: 10, // Reduced from 12 to 10 (proportional scaling)
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8), // Fixed spacing for better readability
+                    const SizedBox(height: 6), // Reduced from 8 to 6
                     const Text(
                       "Too close",
                       style: TextStyle(
-                        fontSize: 17, // Snap name font size
-                        fontWeight: FontWeight.w600, // Snap name font weight
+                        fontSize: 15, // Reduced from 17 to 15
+                        fontWeight: FontWeight.w600,
                         color: Colors.black,
                       ),
                     ),
@@ -138,15 +137,15 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
                 ),
                 // Multi-species (with red X, moved down slightly)
                 Padding(
-                  padding: const EdgeInsets.only(top: 40), // Move "Multi-species" down by 40 pixels
+                  padding: const EdgeInsets.only(top: 35), // Reduced from 40 to 35 (proportional)
                   child: Column(
                     children: [
                       Stack(
                         alignment: Alignment.center,
                         children: [
                           Container(
-                            width: 63,
-                            height: 63,
+                            width: 56, // Reduced from 63 to 56
+                            height: 56,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
@@ -157,8 +156,8 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
                             child: ClipOval(
                               child: Image.asset(
                                 'assets/multi-species.jpg', // Replace with your multi-species image
-                                width: 63, // Match the container size
-                                height: 63,
+                                width: 56, // Match the container size
+                                height: 56,
                                 fit: BoxFit.cover, // Ensure the image fills the circle
                               ),
                             ),
@@ -167,8 +166,8 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
                             top: 0,
                             right: 0,
                             child: Container(
-                              width: 18, // Slightly smaller to be proportional to 63x63
-                              height: 18,
+                              width: 16, // Reduced from 18 to 16
+                              height: 16,
                               decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Colors.red,
@@ -176,17 +175,17 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
                               child: const Icon(
                                 Icons.close,
                                 color: Colors.white,
-                                size: 12, // Proportional to the overlay size
+                                size: 10, // Reduced from 12 to 10
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6), // Reduced from 8 to 6
                       const Text(
                         "Multi-species",
                         style: TextStyle(
-                          fontSize: 17,
+                          fontSize: 15, // Reduced from 17 to 15
                           fontWeight: FontWeight.w600,
                           color: Colors.black,
                         ),
@@ -201,8 +200,8 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
                       alignment: Alignment.center,
                       children: [
                         Container(
-                          width: 63,
-                          height: 63,
+                          width: 56, // Reduced from 63 to 56
+                          height: 56,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
@@ -213,8 +212,8 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
                           child: ClipOval(
                             child: Image.asset(
                               "assets/too far image.png", // Replace with your too far image
-                              width: 63, // Match the container size
-                              height: 63,
+                              width: 56, // Match the container size
+                              height: 56,
                               fit: BoxFit.cover, // Ensure the image fills the circle
                             ),
                           ),
@@ -223,8 +222,8 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
                           top: 0,
                           right: 0,
                           child: Container(
-                            width: 18, // Slightly smaller to be proportional to 63x63
-                            height: 18,
+                            width: 16, // Reduced from 18 to 16
+                            height: 16,
                             decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.red,
@@ -232,17 +231,17 @@ void showSnapTipsDialog(BuildContext context, {required VoidCallback onContinue}
                             child: const Icon(
                               Icons.close,
                               color: Colors.white,
-                              size: 12, // Proportional to the overlay size
+                              size: 10, // Reduced from 12 to 10
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6), // Reduced from 8 to 6
                     const Text(
                       "Too far",
                       style: TextStyle(
-                        fontSize: 17,
+                        fontSize: 15, // Reduced from 17 to 15
                         fontWeight: FontWeight.w600,
                         color: Colors.black,
                       ),

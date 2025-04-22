@@ -31,7 +31,7 @@ class _CommunityPageState extends State<CommunityPage> {
           leading: IconButton(
             icon: const Icon(
               Icons.arrow_back,
-              color: Colors.white,
+              color: Colors.black,
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -42,7 +42,7 @@ class _CommunityPageState extends State<CommunityPage> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
           centerTitle: true,
