@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../models/plant.dart';
+import '../my garden/grawing/grawing_plants.dart';
+import '../my garden/planning/planned_plants.dart';
 
 class PlantDetailScreen extends StatelessWidget {
   final Plant plant;
@@ -43,26 +45,26 @@ class PlantDetailScreen extends StatelessWidget {
               width: double.infinity,
               child: plant.imageUrls.isNotEmpty
                   ? CachedNetworkImage(
-                      imageUrl: plant.imageUrls.first,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => const Center(
-                        child: CircularProgressIndicator(
-                          color: Color(0xFF609254),
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => const Center(
-                        child: Text(
-                          'No Image Available',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                      ),
-                    )
+                imageUrl: plant.imageUrls.first,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF609254),
+                  ),
+                ),
+                errorWidget: (context, url, error) => const Center(
+                  child: Text(
+                    'No Image Available',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                ),
+              )
                   : const Center(
-                      child: Text(
-                        'No Image Available',
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    ),
+                child: Text(
+                  'No Image Available',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(20),
@@ -193,7 +195,53 @@ class PlantDetailScreen extends StatelessWidget {
                   Container(
                     margin: const EdgeInsets.only(right: 16.0),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        // Add plant to plannedPlants if not already added
+                        if (!plannedPlants.contains(plant)) {
+                          plannedPlants.add(plant);
+                        }
+                        // Show popup dialog
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              backgroundColor: const Color(0xFFF4F5EC),
+                              title: const Text(
+                                'Success',
+                                style: TextStyle(
+                                  color: Color(0xff392515),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              content: Text(
+                                '${plant.name} added to Planning!',
+                                style: const TextStyle(
+                                  color: Color(0xff392515),
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(); // Close dialog
+                                    // Navigate to MyGarden with the plant
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/my_garden',
+                                      arguments: {'plant': plant, 'tab': 'Planning'},
+                                    );
+                                  },
+                                  child: const Text(
+                                    'OK',
+                                    style: TextStyle(
+                                      color: Color(0xff609254),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[200],
                         foregroundColor: Colors.black,
@@ -215,7 +263,53 @@ class PlantDetailScreen extends StatelessWidget {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // Add plant to growingPlants if not already added
+                      if (!growingPlants.contains(plant)) {
+                        growingPlants.add(plant);
+                      }
+                      // Show popup dialog
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            backgroundColor: const Color(0xFFF4F5EC),
+                            title: const Text(
+                              'Success',
+                              style: TextStyle(
+                                color: Color(0xff392515),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            content: Text(
+                              '${plant.name} added to Growing!',
+                              style: const TextStyle(
+                                color: Color(0xff392515),
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(); // Close dialog
+                                  // Navigate to MyGarden with the plant
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/my_garden',
+                                    arguments: {'plant': plant, 'tab': 'Growing'},
+                                  );
+                                },
+                                child: const Text(
+                                  'OK',
+                                  style: TextStyle(
+                                    color: Color(0xff609254),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF51B661),
                       foregroundColor: Colors.white,
@@ -245,7 +339,6 @@ class PlantDetailScreen extends StatelessWidget {
   }
 }
 
-// Custom widget for condition rows
 class ConditionRow extends StatelessWidget {
   final IconData icon;
   final String label;

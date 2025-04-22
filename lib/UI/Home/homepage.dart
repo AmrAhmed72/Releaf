@@ -296,7 +296,7 @@ class _HomeContentState extends State<HomeContent> {
           children: [
             const Text(
               "Categories",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
             ),
             GestureDetector(
               onTap: () {
@@ -413,118 +413,120 @@ class _HomeContentState extends State<HomeContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                const Text(
-                  "What to grow in",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(width: 8),
-                // Filter Type Dropdown
-                DropdownButton<String>(
-                  value: _selectedFilterType,
-                  items: ['Season', 'Soil', 'Sunlight'].map((filterType) {
-                    return DropdownMenuItem(
-                      value: filterType,
-                      child: Text(filterType),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        _selectedFilterType = value;
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(width: 8),
-                // Dynamic Filter Value Dropdown
-                if (_selectedFilterType == 'Season')
-                  DropdownButton<String>(
-                    value: _selectedSeason,
-                    items: ['Summer', 'Winter', 'Spring', 'All Year'].map((season) {
-                      return DropdownMenuItem(
-                        value: season,
-                        child: Text(season),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _selectedSeason = value;
-                        });
-                      }
-                    },
-                  ),
-                if (_selectedFilterType == 'Soil')
-                  DropdownButton<String>(
-                    value: _selectedSoil,
-                    items: ['Loamy', 'Sandy', 'Well-drained', 'Moist'].map((soil) {
-                      return DropdownMenuItem(
-                        value: soil,
-                        child: Text(soil),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _selectedSoil = value;
-                        });
-                      }
-                    },
-                  ),
-                if (_selectedFilterType == 'Sunlight')
-                  DropdownButton<String>(
-                    value: _selectedSunlight,
-                    items: ['Full Sun', 'Partial Sun'].map((sunlight) {
-                      return DropdownMenuItem(
-                        value: sunlight,
-                        child: Text(sunlight),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _selectedSunlight = value;
-                        });
-                      }
-                    },
-                  ),
-              ],
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AllPlantsScreen(),
-                  ),
-                );
-              },
-              child: Row(
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
                 children: [
                   const Text(
-                    "View All",
-                    style: TextStyle(
-                      color: Color(0xFF609254),
-                      fontSize: 14,
-                      fontFamily: 'Laila',
-                      fontWeight: FontWeight.w500,
+                    "What to grow in",
+                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(width: 6),
+                  // Filter Type Dropdown
+                  DropdownButton<String>(
+                    value: _selectedFilterType,
+                    items: ['Season', 'Soil', 'Sunlight'].map((filterType) {
+                      return DropdownMenuItem(
+                        value: filterType,
+                        child: Text(filterType),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedFilterType = value;
+                        });
+                      }
+                    },
+                  ),
+                  // Dynamic Filter Value Dropdown
+                  if (_selectedFilterType == 'Season')
+                    DropdownButton<String>(
+                      value: _selectedSeason,
+                      items: ['Summer', 'Winter', 'Spring', 'All Year'].map((season) {
+                        return DropdownMenuItem(
+                          value: season,
+                          child: Text(season),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            _selectedSeason = value;
+                          });
+                        }
+                      },
                     ),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(
-                    Icons.arrow_forward,
-                    color: const Color(0xFF609254),
-                    size: 16,
-                  ),
+                  if (_selectedFilterType == 'Soil')
+                    DropdownButton<String>(
+                      value: _selectedSoil,
+                      items: ['Loamy', 'Sandy', 'Well-drained', 'Moist'].map((soil) {
+                        return DropdownMenuItem(
+                          value: soil,
+                          child: Text(soil),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            _selectedSoil = value;
+                          });
+                        }
+                      },
+                    ),
+                  if (_selectedFilterType == 'Sunlight')
+                    DropdownButton<String>(
+                      value: _selectedSunlight,
+                      items: ['Full Sun', 'Partial Sun'].map((sunlight) {
+                        return DropdownMenuItem(
+                          value: sunlight,
+                          child: Text(sunlight),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            _selectedSunlight = value;
+                          });
+                        }
+                      },
+                    ),
                 ],
               ),
-            ),
-          ],
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AllPlantsScreen(),
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    const Text(
+                      "View All",
+                      style: TextStyle(
+                        color: Color(0xFF609254),
+                        fontSize: 14,
+                        fontFamily: 'Laila',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_forward,
+                      color: const Color(0xFF609254),
+                      size: 16,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 8),
         SizedBox(
@@ -763,7 +765,7 @@ class _HomeContentState extends State<HomeContent> {
           children: [
             const Text(
               "Community",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
             ),
             GestureDetector(
               onTap: () {
