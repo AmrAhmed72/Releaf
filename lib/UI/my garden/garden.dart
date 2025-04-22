@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:releaf/UI/my%20garden/planning/planned_plants.dart';
+import '../../models/plant.dart';
+import 'grawing/grawing card.dart';
+import 'grawing/grawing_plants.dart';
 import 'reminder.dart'; // For AddReminderDialog and ReminderCard
-import 'planing.dart'; // For PlanCard
+import 'planning/plan_card.dart'; // For PlanCard
 
 class MyGarden extends StatefulWidget {
   const MyGarden({super.key});
@@ -23,6 +28,29 @@ class _MyGardenState extends State<MyGarden> {
     "Saturday",
     "Sunday",
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Check for passed arguments when the screen is initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is Map<String, dynamic>) {
+        final Plant? plant = args['plant'] as Plant?;
+        final String? tab = args['tab'] as String?;
+        if (plant != null && tab != null) {
+          setState(() {
+            if (tab == 'Planning' && !plannedPlants.contains(plant)) {
+              plannedPlants.add(plant);
+            } else if (tab == 'Growing' && !growingPlants.contains(plant)) {
+              growingPlants.add(plant);
+            }
+            _selectedCategory = tab;
+          });
+        }
+      }
+    });
+  }
 
   // Function to show the weekday selection dialog for Reminders
   void _showWeekdaySelectionDialog() {
@@ -70,46 +98,52 @@ class _MyGardenState extends State<MyGarden> {
   Widget _buildContent(ScrollController controller) {
     switch (_selectedCategory) {
       case "Planning":
-        return ListView(
+        return plannedPlants.isEmpty
+            ? const Center(child: Text('No plants planned yet'))
+            : ListView.builder(
           controller: controller,
           physics: const ClampingScrollPhysics(),
           padding: const EdgeInsets.all(15.0),
-          children: const [
-            PlanCard(
-              imagePath: 'assets/garlic.jpg',
-              plantName: 'Sweet Basil',
-              season: 'summer',
-            ),
-            SizedBox(height: 16),
-            PlanCard(
-              imagePath: 'assets/tomato.jpg',
-              plantName: 'Potato',
-              season: 'summer',
-            ),
-            SizedBox(height: 16),
-            PlanCard(
-              imagePath: 'assets/garlic.jpg',
-              plantName: 'Yarrow',
-              season: 'summer',
-            ),
-          ],
+          itemCount: plannedPlants.length,
+          itemBuilder: (context, index) {
+            final plant = plannedPlants[index];
+            return Column(
+              children: [
+                PlanCard(
+                  plant: plant,
+                  onRemove: () {
+                    setState(() {
+                      plannedPlants.remove(plant);
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+            );
+          },
         );
       case "Growing":
-        return ListView(
+        return growingPlants.isEmpty
+            ? const Center(child: Text('No plants growing yet'))
+            : ListView.builder(
           controller: controller,
-          children: const [
-            PlantEntry(
-              plantName: 'Onions',
-              growthStage: 'Vegetative',
-              imagePath: 'assets/Rectangle 67.png',
-            ),
-            SizedBox(height: 16),
-            PlantEntry(
-              plantName: 'Maize',
-              growthStage: 'Flowering',
-              imagePath: 'assets/Rectangle 68.png',
-            ),
-          ],
+          physics: const ClampingScrollPhysics(),
+          padding: const EdgeInsets.all(15.0),
+          itemCount: growingPlants.length,
+          itemBuilder: (context, index) {
+            final plant = growingPlants[index];
+            return Column(
+              children: [
+                GrowingCard(
+                  plantName: plant.name,
+                  growthStage: 'Vegetative', // Placeholder, adjust as needed
+                  imageUrl:
+                  plant.imageUrls.isNotEmpty ? plant.imageUrls.first : '',
+                ),
+                const SizedBox(height: 16),
+              ],
+            );
+          },
         );
       case "Reminders":
         return Column(
@@ -176,8 +210,8 @@ class _MyGardenState extends State<MyGarden> {
             fit: BoxFit.cover,
           ),
           DraggableScrollableSheet(
-            initialChildSize: 0.8,
-            minChildSize: 0.1,
+            initialChildSize: 0.7,
+            minChildSize: 0.7,
             maxChildSize: 1,
             builder: (context, controller) => ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
@@ -197,17 +231,29 @@ class _MyGardenState extends State<MyGarden> {
                                 _selectedCategory = "Planning";
                               });
                             },
-                            child: Text(
-                              "Planning",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: _selectedCategory == "Planning"
-                                    ? const Color(0xff609254)
-                                    : const Color(0xff392515),
-                                fontWeight: _selectedCategory == "Planning"
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
-                              ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "Planning",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: _selectedCategory == "Planning"
+                                        ? const Color(0xff609254)
+                                        : const Color(0xff392515),
+                                    fontWeight: _selectedCategory == "Planning"
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
+                                  ),
+                                ),
+                                Container(
+                                  height: 3, // Increased for bolder line
+                                  width: 55,
+                                  color: _selectedCategory == "Planning"
+                                      ? const Color(0xff609254)
+                                      : Colors.transparent,
+                                ),
+                              ],
                             ),
                           ),
                           GestureDetector(
@@ -216,17 +262,29 @@ class _MyGardenState extends State<MyGarden> {
                                 _selectedCategory = "Growing";
                               });
                             },
-                            child: Text(
-                              "Growing",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: _selectedCategory == "Growing"
-                                    ? const Color(0xff609254)
-                                    : const Color(0xff392515),
-                                fontWeight: _selectedCategory == "Growing"
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
-                              ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "Growing",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: _selectedCategory == "Growing"
+                                        ? const Color(0xff609254)
+                                        : const Color(0xff392515),
+                                    fontWeight: _selectedCategory == "Growing"
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
+                                  ),
+                                ),
+                                Container(
+                                  height: 3, // Increased for bolder line
+                                  width: 55,
+                                  color: _selectedCategory == "Growing"
+                                      ? const Color(0xff609254)
+                                      : Colors.transparent,
+                                ),
+                              ],
                             ),
                           ),
                           GestureDetector(
@@ -235,17 +293,29 @@ class _MyGardenState extends State<MyGarden> {
                                 _selectedCategory = "Reminders";
                               });
                             },
-                            child: Text(
-                              "Reminders",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: _selectedCategory == "Reminders"
-                                    ? const Color(0xff609254)
-                                    : const Color(0xff392515),
-                                fontWeight: _selectedCategory == "Reminders"
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
-                              ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "Reminders",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: _selectedCategory == "Reminders"
+                                        ? const Color(0xff609254)
+                                        : const Color(0xff392515),
+                                    fontWeight: _selectedCategory == "Reminders"
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
+                                  ),
+                                ),
+                                Container(
+                                  height: 3, // Increased for bolder line
+                                  width: 70,
+                                  color: _selectedCategory == "Reminders"
+                                      ? const Color(0xff609254)
+                                      : Colors.transparent,
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -271,102 +341,6 @@ class _MyGardenState extends State<MyGarden> {
           Icons.add,
           color: Color(0xffeef0e2),
           size: 30,
-        ),
-      ),
-    );
-  }
-}
-
-// PlantEntry class
-class PlantEntry extends StatelessWidget {
-  final String plantName;
-  final String growthStage;
-  final String imagePath;
-
-  const PlantEntry({
-    super.key,
-    required this.plantName,
-    required this.growthStage,
-    required this.imagePath,
-  });
-
-  void _showAddReminderDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return const AddReminderDialog();
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      color: const Color(0xffeef0e2),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  image: AssetImage(imagePath),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    plantName,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xff392515),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Growth stage: $growthStage',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        _showAddReminderDialog(context);
-                      },
-                      icon: const Icon(Icons.add_alert, size: 18),
-                      label: const Text('Add Reminder'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xff609254),
-                        foregroundColor: const Color(0xffeef0e2),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
         ),
       ),
     );

@@ -4,9 +4,10 @@ import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../../services/IdentifyApi.dart';
+import 'ResultScreen.dart';
 import 'snap_tips_dialog.dart'; // Import the utility file
+
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -109,46 +110,35 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  // Function to identify the plant using PlantNet API
+  // Function to identify the flower using the IdentifyApi
   Future<void> _identifyPlant() async {
     if (_imagePath == null) return;
 
     try {
-      // Create a multipart request to send the image to PlantNet
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse('https://my-api.plantnet.org/v2/identify/all?api-key=YOUR_API_KEY'),
+      // Call the IdentifyApi to identify the flower
+      var result = await IdentifyApi.identifyFlower(_imagePath!);
+
+      // Extract primary and secondary identification
+      var flowerInfoPrimary = result['primary'];
+      var flowerInfoSecondary = result['secondary'];
+      print("Primary identification: $flowerInfoPrimary");
+      print("Secondary identification: $flowerInfoSecondary");
+
+      // Navigate to the ResultScreen with both pieces of information
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResultScreen(
+            flowerInfoPrimary: flowerInfoPrimary,
+            flowerInfoSecondary: flowerInfoSecondary,
+            imagePath: _imagePath!,
+          ),
+        ),
       );
-
-      // Add the image file to the request
-      request.files.add(await http.MultipartFile.fromPath('images', _imagePath!));
-
-      // Add additional parameters (e.g., organs to identify)
-      request.fields['organs'] = 'leaf'; // Example: identifying a leaf
-
-      // Send the request
-      var response = await request.send();
-      var responseData = await response.stream.bytesToString();
-      var result = jsonDecode(responseData);
-
-      // Check the response status
-      if (response.statusCode == 200) {
-        // Parse the results
-        var plantName = result['results'][0]['species']['scientificNameWithoutAuthor'];
-        print("Identified plant: $plantName");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Identified plant: $plantName")),
-        );
-      } else {
-        print("Error identifying plant: ${response.statusCode}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Error identifying plant")),
-        );
-      }
     } catch (e) {
-      print("Error identifying plant: $e");
+      print("Error identifying flower: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error identifying plant: $e")),
+        SnackBar(content: Text("Error identifying flower: $e")),
       );
     }
   }
@@ -196,7 +186,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 child: CustomDashedBorder(
                   width: 200,
                   height: 200,
-                  strokeWidth:5,
+                  strokeWidth: 5,
                   dashLength: 50,
                   dashGap: 80,
                   color: Colors.green,
@@ -256,7 +246,7 @@ class _CameraScreenState extends State<CameraScreen> {
                         ElevatedButton(
                           onPressed: _imagePath != null
                               ? () {
-                            _identifyPlant(); // Call the plant identification function
+                            _identifyPlant(); // Call the flower identification function
                           }
                               : null,
                           style: ElevatedButton.styleFrom(
