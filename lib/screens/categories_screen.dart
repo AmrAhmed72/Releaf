@@ -66,7 +66,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xff392515)),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,

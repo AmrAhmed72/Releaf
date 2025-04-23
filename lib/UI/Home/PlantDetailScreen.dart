@@ -13,12 +13,12 @@ class PlantDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(35),
+        preferredSize: const Size.fromHeight(45),
         child: AppBar(
           backgroundColor: const Color(0xFFF4F5EC),
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xff392515)),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -26,9 +26,9 @@ class PlantDetailScreen extends StatelessWidget {
           title: Text(
             plant.name,
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: Color(0xff392515),
             ),
           ),
           centerTitle: true,
@@ -70,7 +70,7 @@ class PlantDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               child: Text(
                 plant.name,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold,color: Color(0xff392515)),
               ),
             ),
             // Description Section
@@ -78,14 +78,14 @@ class PlantDetailScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
                 'Description',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Color(0xff392515)),
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 plant.description,
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16,color: Color(0xff392515)),
               ),
             ),
             // Conditions Section
@@ -93,7 +93,7 @@ class PlantDetailScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
                 'Conditions',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Color(0xff392515)),
               ),
             ),
             Padding(
@@ -101,9 +101,11 @@ class PlantDetailScreen extends StatelessWidget {
               child: Column(
                 children: [
                   ConditionRow(
+
                     icon: Icons.thermostat,
                     label: 'Temperature',
                     value: plant.temperature,
+
                   ),
                   const SizedBox(height: 8.0),
                   ConditionRow(
@@ -117,12 +119,7 @@ class PlantDetailScreen extends StatelessWidget {
                     label: 'Soil',
                     value: plant.soil,
                   ),
-                  const SizedBox(height: 8.0),
-                  ConditionRow(
-                    icon: Icons.landscape,
-                    label: 'Hardiness Zones',
-                    value: plant.hardinessZones,
-                  ),
+
                   const SizedBox(height: 8.0),
                   ConditionRow(
                     icon: Icons.water_drop,
@@ -131,9 +128,15 @@ class PlantDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8.0),
                   ConditionRow(
-                    icon: Icons.terrain,
+                    icon: Icons.sunny_snowing,
                     label: 'Soil Type',
                     value: plant.soil_type,
+                  ),
+                  const SizedBox(height: 8.0),
+                  ConditionRow(
+                    icon: Icons.landscape,
+                    label: 'Hardiness Zones',
+                    value: plant.hardinessZones,
                   ),
                 ],
               ),
@@ -143,7 +146,7 @@ class PlantDetailScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
                 'Growth Timeline',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Color(0xff392515)),
               ),
             ),
             Padding(
@@ -151,7 +154,7 @@ class PlantDetailScreen extends StatelessWidget {
               child: Column(
                 children: [
                   ConditionRow(
-                    icon: Icons.calendar_today,
+                    icon:  Icons.spa_outlined,
                     label: 'Sowing',
                     value: plant.day_sowing,
                   ),
@@ -163,7 +166,7 @@ class PlantDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8.0),
                   ConditionRow(
-                    icon: Icons.local_florist,
+                    icon: Icons.local_florist_outlined,
                     label: 'Vegetative Growth',
                     value: plant.day_vegetative,
                   ),
@@ -175,7 +178,7 @@ class PlantDetailScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
                 'Season',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Color(0xff392515)),
               ),
             ),
             Padding(
@@ -195,53 +198,62 @@ class PlantDetailScreen extends StatelessWidget {
                   Container(
                     margin: const EdgeInsets.only(right: 16.0),
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Add plant to plannedPlants if not already added
-                        if (!plannedPlants.contains(plant)) {
-                          plannedPlants.add(plant);
-                        }
-                        // Show popup dialog
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              backgroundColor: const Color(0xFFF4F5EC),
-                              title: const Text(
-                                'Success',
-                                style: TextStyle(
-                                  color: Color(0xff392515),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              content: Text(
-                                '${plant.name} added to Planning!',
-                                style: const TextStyle(
-                                  color: Color(0xff392515),
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(); // Close dialog
-                                    // Navigate to MyGarden with the plant
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/my_garden',
-                                      arguments: {'plant': plant, 'tab': 'Planning'},
-                                    );
-                                  },
-                                  child: const Text(
-                                    'OK',
-                                    style: TextStyle(
-                                      color: Color(0xff609254),
+                        onPressed: () {
+                          if (!plannedPlants.contains(plant)) {
+                            plannedPlants.add(plant);
+                          }
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                backgroundColor: const Color(0xFFEEF0E2),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      width: 162,
+                                      height: 142,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        color: const Color(0xffeef0e2),
+                                      ),
+                                      child: Center(
+                                        child: Container(
+                                          width: 90, // Matching the size of the previous image
+                                          height: 90,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color:  Color(0xffc3824d), // Circle border color
+                                              width: 5.2, // Thickness of the circle
+                                            ),
+                                          ),
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.check,
+                                              color: Color(0xffc3824d), // Checkmark color
+                                              size: 70, // Adjust size of the checkmark
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    const SizedBox(height: 12),
+                                    const Text(
+                                      'Add to planning',
+                                      style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xffc3824d),
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            );
-                          },
-                        );
-                      },
+                              );
+                            },
+                          );
+                        },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[200],
                         foregroundColor: Colors.black,
@@ -256,7 +268,7 @@ class PlantDetailScreen extends StatelessWidget {
                         children: [
                           Text(
                             'Planning to grow 🌱',
-                            style: TextStyle(fontSize: 14),
+                            style: TextStyle(fontSize: 15,color: Color(0xff392515)),
                           ),
                         ],
                       ),
@@ -268,44 +280,54 @@ class PlantDetailScreen extends StatelessWidget {
                       if (!growingPlants.contains(plant)) {
                         growingPlants.add(plant);
                       }
-                      // Show popup dialog
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            backgroundColor: const Color(0xFFF4F5EC),
-                            title: const Text(
-                              'Success',
-                              style: TextStyle(
-                                color: Color(0xff392515),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            content: Text(
-                              '${plant.name} added to Growing!',
-                              style: const TextStyle(
-                                color: Color(0xff392515),
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop(); // Close dialog
-                                  // Navigate to MyGarden with the plant
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/my_garden',
-                                    arguments: {'plant': plant, 'tab': 'Growing'},
-                                  );
-                                },
-                                child: const Text(
-                                  'OK',
-                                  style: TextStyle(
-                                    color: Color(0xff609254),
+                            backgroundColor: const Color(0xFFEEF0E2),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 162,
+                                  height: 142,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: const Color(0xffeef0e2),
+                                  ),
+                                  child: Center(
+                                    child: Container(
+                                      width: 90, // Matching the size of the previous image
+                                      height: 90,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color:  Color(0xffc3824d), // Circle border color
+                                          width: 5.2, // Thickness of the circle
+                                        ),
+                                      ),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.check,
+                                          color: Color(0xffc3824d), // Checkmark color
+                                          size: 70, // Adjust size of the checkmark
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 12),
+                                const Text(
+                                  'Add to Growing',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xffc3824d),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           );
                         },
                       );
@@ -324,7 +346,7 @@ class PlantDetailScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Growing it 🌿',
-                          style: TextStyle(fontSize: 15),
+                          style: TextStyle(fontSize: 15,color: Color(0xFFF4F5EC)),
                         ),
                       ],
                     ),

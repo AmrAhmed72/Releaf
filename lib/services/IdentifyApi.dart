@@ -16,6 +16,7 @@ class IdentifyApi {
 
       // Send the request
       var response = await request.send();
+      
       var responseData = await response.stream.bytesToString();
       var result = jsonDecode(responseData);
 

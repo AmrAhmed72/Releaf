@@ -103,7 +103,7 @@ class _MyGardenState extends State<MyGarden> {
             : ListView.builder(
           controller: controller,
           physics: const ClampingScrollPhysics(),
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.all(1),
           itemCount: plannedPlants.length,
           itemBuilder: (context, index) {
             final plant = plannedPlants[index];
@@ -128,13 +128,14 @@ class _MyGardenState extends State<MyGarden> {
             : ListView.builder(
           controller: controller,
           physics: const ClampingScrollPhysics(),
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.all(1),
           itemCount: growingPlants.length,
           itemBuilder: (context, index) {
             final plant = growingPlants[index];
             return Column(
               children: [
                 GrowingCard(
+                  plant: plant,
                   plantName: plant.name,
                   growthStage: 'Vegetative', // Placeholder, adjust as needed
                   imageUrl:

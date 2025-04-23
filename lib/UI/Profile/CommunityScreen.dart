@@ -29,10 +29,7 @@ class _CommunityPageState extends State<CommunityPage> {
           backgroundColor: const Color(0xFF609254),
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            ),
+            icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xff392515)),
             onPressed: () {
               Navigator.pop(context);
             },
