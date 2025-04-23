@@ -56,14 +56,20 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       backgroundColor: const Color(0xFFF4F5EC),
       appBar: AppBar(
         backgroundColor: const Color(0xFF609254),
+        elevation: 0,
         title: const Text(
           'Categories',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xff392515)),
           onPressed: () => Navigator.pop(context),
         ),
+        centerTitle: true,
       ),
       body: FutureBuilder<List<Category>>(
         future: _categoriesFuture,

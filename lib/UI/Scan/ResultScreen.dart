@@ -13,20 +13,26 @@ class ResultScreen extends StatelessWidget {
     required this.flowerInfoSecondary,
     required this.imagePath,
   });
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xffeef0e2),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF609254),
-        title: const Text("Identification Result"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+        backgroundColor: const Color(0xffeef0e2),
+        elevation: 0,
+        title: const Text(
+          'Identification Result',
+          style: TextStyle(
+            color: Color(0xff392515),
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xff392515)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -35,10 +41,10 @@ class ResultScreen extends StatelessWidget {
           children: [
             // Display the image
             Container(
-              width: double.infinity,
+              width: 400,
               height: 300,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(5),
                 image: DecorationImage(
                   image: FileImage(File(imagePath)),
                   fit: BoxFit.cover,
@@ -48,7 +54,7 @@ class ResultScreen extends StatelessWidget {
             const SizedBox(height: 20),
             // Display the primary flower identification
             Text(
-              "Primary Identification",
+              "Identification Name : ",
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: const Color(0xFF609254),
                 fontWeight: FontWeight.bold,
@@ -58,14 +64,14 @@ class ResultScreen extends StatelessWidget {
             Text(
               flowerInfoPrimary,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 19,
                 color: Colors.black87,
               ),
             ),
             const SizedBox(height: 20),
             // Display the secondary flower identification
             Text(
-              "Secondary Identification",
+              "Description : ",
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: const Color(0xFF609254),
                 fontWeight: FontWeight.bold,
@@ -75,7 +81,7 @@ class ResultScreen extends StatelessWidget {
             Text(
               flowerInfoSecondary,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 17,
                 color: Colors.black87,
               ),
             ),

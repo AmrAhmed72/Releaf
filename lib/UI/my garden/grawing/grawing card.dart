@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../reminder.dart'; // For AddReminderDialog
+import '../../../models/plant.dart';
 
 class GrowingCard extends StatelessWidget {
   final String plantName;
+  final Plant plant;
   final String growthStage;
   final String imageUrl;
   final VoidCallback? onAddReminder;
 
   const GrowingCard({
     super.key,
+    required this.plant,
     required this.plantName,
     required this.growthStage,
     required this.imageUrl,
@@ -34,7 +37,7 @@ class GrowingCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(10.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -85,10 +88,10 @@ class GrowingCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Growth stage: $growthStage',
+                    'soil: ${plant.soil ?? 'Unknown'}',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey[600],
+                      color: Color(0xff22160d),
                     ),
                   ),
                   const SizedBox(height: 12),

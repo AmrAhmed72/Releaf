@@ -62,6 +62,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
+
               controller: _nameController,
               decoration: const InputDecoration(labelText: 'Name'),
             ),

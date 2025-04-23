@@ -10,18 +10,16 @@ import 'package:releaf/screens/categories_screen.dart';
 import 'package:releaf/UI/Home/PlantDetailScreen.dart';
 import 'package:releaf/screens/category_detail_screen.dart';
 import 'package:releaf/screens/all_plants_screen.dart';
-
-
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 // Import models
 import 'package:releaf/models/category.dart';
-import 'package:releaf/models/GrowItem.dart';
 import 'package:releaf/models/CommunityEvent.dart';
 import 'package:releaf/models/plant.dart';
 
 // Import data
 import 'package:releaf/data/categories.dart';
-import 'package:releaf/data/GrowItems.dart';
 import 'package:releaf/data/CommunityEvents.dart';
 import 'package:releaf/services/api_service.dart';
 
@@ -38,13 +36,26 @@ class _HomepageState extends State<Homepage> {
   int _index = 0; // Start at the Home tab (index 0)
 
   // List of screens to navigate to
-  final List<Widget> _screens = [
-    const HomeContent(), // Home content (index 0)
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize _screens with the callback for map banner
+    _screens = [
+    HomeContent(
+    onMapBannerTapped: () {
+    setState(() {
+    _index = 1; // Switch to MapScreen
+    });
+    },
+    ),
     const MapScreen(), // Locations screen (index 1)
-    const Placeholder(), // Camera screen (index 2, will be handled separately)
+    const Placeholder(),
     MyGarden(), // Favorites screen (index 3)
     ProfileScreen(), // Profile screen (index 4)
-  ];
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +107,9 @@ class _HomepageState extends State<Homepage> {
 
 // Separate widget for the Home content
 class HomeContent extends StatefulWidget {
-  const HomeContent({super.key});
+  final VoidCallback onMapBannerTapped; // Callback for map banner tap
+
+  const HomeContent({super.key, required this.onMapBannerTapped});
 
   @override
   State<HomeContent> createState() => _HomeContentState();
@@ -278,13 +291,46 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Widget _buildMapBanner() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Image.asset(
-        "assets/download.jpg",
-        height: 180,
-        width: double.infinity,
-        fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: widget.onMapBannerTapped, // Call the callback to switch to MapScreen
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          height: 180,
+          width: double.infinity,
+          child: Stack(
+            children: [
+              FlutterMap(
+                options: MapOptions(
+                  initialCenter: LatLng(31.2357, 30.0444),
+                  initialZoom: 5,
+                  interactionOptions: const InteractionOptions(
+                    flags: InteractiveFlag.none,
+                  ),
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+                    subdomains: ['a', 'b', 'c'],
+                  ),
+
+                ],
+              ),
+              Positioned(
+                bottom: 10,
+                right: 10,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  color: Colors.black.withOpacity(0.5),
+                  child: const Text(
+                    'Tap to Explore Map',
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -298,7 +344,7 @@ class _HomeContentState extends State<HomeContent> {
           children: [
             const Text(
               "Categories",
-              style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold,color: Color(0xff392515),fontFamily: 'Laila',),
             ),
             GestureDetector(
               onTap: () {
@@ -424,7 +470,7 @@ class _HomeContentState extends State<HomeContent> {
                 children: [
                   const Text(
                     "What to grow in",
-                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold,color: Color(0xff392515)),
                   ),
                   const SizedBox(width: 6),
                   // Filter Type Dropdown
@@ -820,7 +866,7 @@ class _HomeContentState extends State<HomeContent> {
           children: [
             const Text(
               "Community",
-              style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold,color: Color(0xff392515)),
             ),
             GestureDetector(
               onTap: () {

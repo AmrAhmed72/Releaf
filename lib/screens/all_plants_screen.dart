@@ -24,20 +24,20 @@ class _AllPlantsScreenState extends State<AllPlantsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F5EC),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF609254),
+      backgroundColor: Colors.white,
+      appBar:  AppBar(
+        backgroundColor: const Color(0xFFEEF0E2),
         elevation: 0,
         title: const Text(
           'All Plants',
           style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
+            color: Color(0xff392515),
+            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xff392515)),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
@@ -78,7 +78,7 @@ class _AllPlantsScreenState extends State<AllPlantsScreen> {
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Color(0xFFEEF0E2),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(

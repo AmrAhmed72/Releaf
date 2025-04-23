@@ -3,7 +3,7 @@ import 'package:releaf/SplashScreen.dart';
 import 'package:releaf/UI/Home/homepage.dart';
 import 'package:releaf/UI/signup/SignUpScreen.dart';
 import 'UI/Home/PlantDetailScreen.dart';
-import 'data/plant_data.dart'; // Added to access plants
+
 
 void main() {
   runApp(const MyApp());

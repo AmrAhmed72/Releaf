@@ -29,10 +29,7 @@ class _CommunityPageState extends State<CommunityPage> {
           backgroundColor: const Color(0xFF609254),
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
+            icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xff392515)),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -42,7 +39,7 @@ class _CommunityPageState extends State<CommunityPage> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
           centerTitle: true,

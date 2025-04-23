@@ -135,6 +135,7 @@ class _MyGardenState extends State<MyGarden> {
             return Column(
               children: [
                 GrowingCard(
+                  plant: plant,
                   plantName: plant.name,
                   growthStage: 'Vegetative', // Placeholder, adjust as needed
                   imageUrl:
