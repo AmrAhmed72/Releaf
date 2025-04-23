@@ -39,7 +39,6 @@ class PlantDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Plant Image
             Container(
               height: 210,
               width: double.infinity,
@@ -73,7 +72,6 @@ class PlantDetailScreen extends StatelessWidget {
                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
-            // Description Section
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
@@ -88,7 +86,6 @@ class PlantDetailScreen extends StatelessWidget {
                 style: const TextStyle(fontSize: 16),
               ),
             ),
-            // Conditions Section
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
@@ -138,7 +135,6 @@ class PlantDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-            // Growth Timeline Section
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
@@ -170,7 +166,6 @@ class PlantDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-            // Season Section
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
@@ -186,7 +181,6 @@ class PlantDetailScreen extends StatelessWidget {
                 value: plant.season,
               ),
             ),
-            // Buttons
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -196,48 +190,57 @@ class PlantDetailScreen extends StatelessWidget {
                     margin: const EdgeInsets.only(right: 16.0),
                     child: ElevatedButton(
                       onPressed: () {
-                        // Add plant to plannedPlants if not already added
                         if (!plannedPlants.contains(plant)) {
                           plannedPlants.add(plant);
                         }
-                        // Show popup dialog
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              backgroundColor: const Color(0xFFF4F5EC),
-                              title: const Text(
-                                'Success',
-                                style: TextStyle(
-                                  color: Color(0xff392515),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              content: Text(
-                                '${plant.name} added to Planning!',
-                                style: const TextStyle(
-                                  color: Color(0xff392515),
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(); // Close dialog
-                                    // Navigate to MyGarden with the plant
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/my_garden',
-                                      arguments: {'plant': plant, 'tab': 'Planning'},
-                                    );
-                                  },
-                                  child: const Text(
-                                    'OK',
-                                    style: TextStyle(
-                                      color: Color(0xff609254),
+                              backgroundColor: const Color(0xFFEEF0E2),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 162,
+                                    height: 142,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      color: const Color(0xffeef0e2),
+                                    ),
+                                    child: Center(
+                                      child: Container(
+                                        width: 90, // Matching the size of the previous image
+                                        height: 90,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color:  Color(0xffc3824d), // Circle border color
+                                            width: 5.2, // Thickness of the circle
+                                          ),
+                                        ),
+                                        child: const Center(
+                                          child: Icon(
+                                            Icons.check,
+                                            color: Color(0xffc3824d), // Checkmark color
+                                            size: 70, // Adjust size of the checkmark
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 12),
+                                  const Text(
+                                    'Add to planning',
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xffc3824d),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
                             );
                           },
                         );
@@ -264,48 +267,57 @@ class PlantDetailScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // Add plant to growingPlants if not already added
                       if (!growingPlants.contains(plant)) {
                         growingPlants.add(plant);
                       }
-                      // Show popup dialog
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            backgroundColor: const Color(0xFFF4F5EC),
-                            title: const Text(
-                              'Success',
-                              style: TextStyle(
-                                color: Color(0xff392515),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            content: Text(
-                              '${plant.name} added to Growing!',
-                              style: const TextStyle(
-                                color: Color(0xff392515),
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop(); // Close dialog
-                                  // Navigate to MyGarden with the plant
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/my_garden',
-                                    arguments: {'plant': plant, 'tab': 'Growing'},
-                                  );
-                                },
-                                child: const Text(
-                                  'OK',
-                                  style: TextStyle(
-                                    color: Color(0xff609254),
+                            backgroundColor: const Color(0xFFEEF0E2),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 162,
+                                  height: 142,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: const Color(0xffeef0e2),
+                                  ),
+                                  child: Center(
+                                    child: Container(
+                                      width: 90, // Matching the size of the previous image
+                                      height: 90,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color:  Color(0xffc3824d), // Circle border color
+                                          width: 5.2, // Thickness of the circle
+                                        ),
+                                      ),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.check,
+                                          color: Color(0xffc3824d), // Checkmark color
+                                          size: 70, // Adjust size of the checkmark
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 12),
+                                const Text(
+                                  'Add to Growing',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xffc3824d),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           );
                         },
                       );

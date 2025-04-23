@@ -4,8 +4,8 @@ import '../../../models/plant.dart';
 import '../grawing/grawing_plants.dart';
 
 class PlanCard extends StatelessWidget {
-  final Plant plant; // Changed to Plant object
-  final VoidCallback onRemove; // Callback for removing the plant
+  final Plant plant;
+  final VoidCallback onRemove;
 
   const PlanCard({
     super.key,
@@ -16,7 +16,7 @@ class PlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 130,
+      height: 150,
       child: Card(
         elevation: 2,
         color: const Color(0xffeef0e2),
@@ -85,7 +85,7 @@ class PlanCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 40), // Shift 5 pixels to the right
+                    padding: const EdgeInsets.only(left: 35),
                     child: PopupMenuButton<String>(
                       onSelected: (value) {
                         if (value == 'remove') {
@@ -99,58 +99,67 @@ class PlanCard extends StatelessWidget {
                         ),
                       ],
                       icon: const Icon(
-                        Icons.more_vert_rounded,
+                        Icons.more_vert,
                         color: Color(0xff392515),
                         size: 20,
                       ),
-                      offset: const Offset(0, 20), // Adjust menu position
+                      offset: const Offset(0, 20),
                     ),
                   ),
                   const SizedBox(height: 6),
                   OutlinedButton.icon(
                     onPressed: () {
-                      // Add plant to growingPlants if not already added
                       if (!growingPlants.contains(plant)) {
                         growingPlants.add(plant);
                       }
-                      // Show popup dialog
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            backgroundColor: const Color(0xFFF4F5EC),
-                            title: const Text(
-                              'Success',
-                              style: TextStyle(
-                                color: Color(0xff392515),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            content: Text(
-                              '${plant.name} added to Growing!',
-                              style: const TextStyle(
-                                color: Color(0xff392515),
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop(); // Close dialog
-                                  // Navigate to MyGarden with the plant and Growing tab
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/my_garden',
-                                    arguments: {'plant': plant, 'tab': 'Growing'},
-                                  );
-                                },
-                                child: const Text(
-                                  'OK',
-                                  style: TextStyle(
-                                    color: Color(0xff609254),
+                            backgroundColor: const Color(0xFFEEF0E2),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 162,
+                                  height: 142,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: const Color(0xffeef0e2),
+                                  ),
+                                  child: Center(
+                                    child: Container(
+                                      width: 90, // Matching the size of the previous image
+                                      height: 90,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color:  Color(0xffc3824d), // Circle border color
+                                          width: 5.2, // Thickness of the circle
+                                        ),
+                                      ),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.check,
+                                          color: Color(0xffc3824d), // Checkmark color
+                                          size: 70, // Adjust size of the checkmark
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 12),
+                                const Text(
+                                  'Add to Growing',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xffc3824d),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           );
                         },
                       );

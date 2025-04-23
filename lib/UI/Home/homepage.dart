@@ -25,6 +25,8 @@ import 'package:releaf/data/GrowItems.dart';
 import 'package:releaf/data/CommunityEvents.dart';
 import 'package:releaf/services/api_service.dart';
 
+import '../my garden/grawing/grawing_plants.dart';
+
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
 
@@ -668,7 +670,60 @@ class _HomeContentState extends State<HomeContent> {
               top: 124,
               child: GestureDetector(
                 onTap: () {
-                  // Add functionality for the "+" button
+                  if (!growingPlants.contains(plant)) {
+                    growingPlants.add(plant);
+                  }
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        backgroundColor: const Color(0xFFEEF0E2),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 162,
+                              height: 142,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: const Color(0xffeef0e2),
+                              ),
+                              child: Center(
+                                child: Container(
+                                  width: 90, // Matching the size of the previous image
+                                  height: 90,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color:  Color(0xffc3824d), // Circle border color
+                                      width: 5.2, // Thickness of the circle
+                                    ),
+                                  ),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.check,
+                                      color: Color(0xffc3824d), // Checkmark color
+                                      size: 70, // Adjust size of the checkmark
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Add to Growing',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xffc3824d),
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ); // Add functionality for the "+" button
                 },
                 child: Container(
                   width: 15,
