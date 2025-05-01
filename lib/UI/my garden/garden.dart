@@ -202,7 +202,8 @@ class _MyGardenState extends State<MyGarden> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+      child: Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -344,6 +345,6 @@ class _MyGardenState extends State<MyGarden> {
           size: 30,
         ),
       ),
-    );
+    ));
   }
 }

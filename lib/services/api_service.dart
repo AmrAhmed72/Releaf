@@ -9,10 +9,10 @@ class ApiService {
 
   Future<List<Campaign>> getAllCampaigns() async {
     try {
-      print('Attempting to fetch campaigns from: $baseUrl/Campaign/GetAllCampaigns');
+      print('Attempting to fetch campaigns from: $baseUrl/Campaing/GetAllCampaigns');
       
       final response = await http.get(
-        Uri.parse('$baseUrl/Campaign/GetAllCampaigns'),
+        Uri.parse('$baseUrl/Campaing/GetAllCampaigns'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',

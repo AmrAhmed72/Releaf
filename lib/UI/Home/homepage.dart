@@ -6,10 +6,10 @@ import 'package:releaf/UI/my garden/garden.dart';
 import 'package:releaf/UI/Profile/CommunityScreen.dart';
 import 'package:releaf/UI/Scan/ScanScreen.dart';
 import 'package:releaf/UI/map/MapScreen.dart';
-import 'package:releaf/screens/categories_screen.dart';
-import 'package:releaf/UI/Home/PlantDetailScreen.dart';
-import 'package:releaf/screens/category_detail_screen.dart';
-import 'package:releaf/screens/all_plants_screen.dart';
+import 'package:releaf/UI/Home/Category/categories_screen.dart';
+import 'package:releaf/UI/Home/Plants/PlantDetailScreen.dart';
+import 'package:releaf/UI/Home/Category/category_detail_screen.dart';
+import 'package:releaf/UI/Home/Plants/all_plants_screen.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -22,7 +22,6 @@ import 'package:releaf/models/plant.dart';
 import 'package:releaf/data/categories.dart';
 import 'package:releaf/data/CommunityEvents.dart';
 import 'package:releaf/services/api_service.dart';
-
 import '../my garden/grawing/grawing_plants.dart';
 
 class Homepage extends StatefulWidget {
@@ -42,34 +41,40 @@ class _HomepageState extends State<Homepage> {
   void initState() {
     super.initState();
     // Initialize _screens with the callback for map banner
+
     _screens = [
-    HomeContent(
-    onMapBannerTapped: () {
-    setState(() {
-    _index = 1; // Switch to MapScreen
-    });
-    },
-    ),
-    const MapScreen(), // Locations screen (index 1)
-    const Placeholder(),
-    MyGarden(), // Favorites screen (index 3)
-    ProfileScreen(), // Profile screen (index 4)
+      HomeContent(
+        onMapBannerTapped: () {
+          setState(() {
+            _index = 1; // Switch to MapScreen
+          });
+        },
+      ),
+      const MapScreen(), // Locations screen (index 1)
+      const Placeholder(),
+      const MyGarden(), // Favorites screen (index 3)
+      ProfileScreen(), // Profile screen (index 4)
     ];
   }
 
   @override
   Widget build(BuildContext context) {
     final items = <Widget>[
-      const Icon(Icons.home, size: 30, color: Color(0xff22160d)), // Index 0: Home
-      const Icon(Icons.location_on, size: 30, color: Color(0xff22160d)), // Index 1: Locations
-      const Icon(Icons.camera_alt, size: 30, color: Color(0xff22160d)), // Index 2: Camera
+      const Icon(Icons.home, size: 30, color: Color(0xff22160d)),
+      // Index 0: Home
+      const Icon(Icons.location_on, size: 30, color: Color(0xff22160d)),
+      // Index 1: Locations
+      const Icon(Icons.camera_alt, size: 30, color: Color(0xff22160d)),
+      // Index 2: Camera
       Image.asset(
         'assets/gardenIcon.png',
         width: 24,
         height: 24,
         fit: BoxFit.contain,
-      ), // Index 3: Favorites
-      const Icon(Icons.person, size: 30, color: Color(0xff22160d)), // Index 4: Profile
+      ),
+      // Index 3: Favorites
+      const Icon(Icons.person, size: 30, color: Color(0xff22160d)),
+      // Index 4: Profile
     ];
 
     return Scaffold(
@@ -119,7 +124,8 @@ class _HomeContentState extends State<HomeContent> {
   bool _isChecked = false;
   final ApiService _apiService = ApiService();
   late Future<List<Plant>> _plantsFuture;
-  String _selectedFilterType = 'Season'; // Track filter type (Season, Soil, Sunlight)
+  String _selectedFilterType =
+      'Season'; // Track filter type (Season, Soil, Sunlight)
   String _selectedSeason = 'Summer';
   String _selectedSoil = 'Loamy';
   String _selectedSunlight = 'Full Sun';
@@ -130,15 +136,26 @@ class _HomeContentState extends State<HomeContent> {
     _plantsFuture = _apiService.getAllPlants();
   }
 
+  Future<void> _refreshPlants() async {
+    setState(() {
+      _plantsFuture = _apiService.getAllPlants();
+
+    });
+  }
+
   List<Plant> _filterPlants(List<Plant> plants) {
     return plants.where((plant) {
       if (_selectedFilterType == 'Season') {
         // Handle complex season values (e.g., "Spring to Summer" includes "Spring" or "Summer")
-        return plant.season.toLowerCase().contains(_selectedSeason.toLowerCase());
+        return plant.season
+            .toLowerCase()
+            .contains(_selectedSeason.toLowerCase());
       } else if (_selectedFilterType == 'Soil') {
         return plant.soil.toLowerCase().contains(_selectedSoil.toLowerCase());
       } else if (_selectedFilterType == 'Sunlight') {
-        return plant.sunlight.toLowerCase().contains(_selectedSunlight.toLowerCase());
+        return plant.sunlight
+            .toLowerCase()
+            .contains(_selectedSunlight.toLowerCase());
       }
       return true; // Default: no filter
     }).toList();
@@ -147,24 +164,29 @@ class _HomeContentState extends State<HomeContent> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildSearchBar(),
-              const SizedBox(height: 16),
-              _buildTodaysCare(),
-              const SizedBox(height: 16),
-              _buildMapBanner(),
-              const SizedBox(height: 16),
-              _buildCategoryList(),
-              const SizedBox(height: 16),
-              _buildWhatToGrowSection(),
-              const SizedBox(height: 16),
-              _buildCommunitySection(context),
-            ],
+      child: RefreshIndicator(
+        color: Color(0xFF609254),
+        backgroundColor: Color(0xFFF4F5EC),
+        onRefresh: _refreshPlants,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSearchBar(),
+                const SizedBox(height: 16),
+                _buildTodaysCare(),
+                const SizedBox(height: 16),
+                _buildMapBanner(),
+                const SizedBox(height: 16),
+                _buildCategoryList(),
+                const SizedBox(height: 16),
+                _buildWhatToGrowSection(),
+                const SizedBox(height: 16),
+                _buildCommunitySection(context),
+              ],
+            ),
           ),
         ),
       ),
@@ -292,7 +314,8 @@ class _HomeContentState extends State<HomeContent> {
 
   Widget _buildMapBanner() {
     return GestureDetector(
-      onTap: widget.onMapBannerTapped, // Call the callback to switch to MapScreen
+      onTap: widget.onMapBannerTapped,
+      // Call the callback to switch to MapScreen
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: Container(
@@ -310,10 +333,10 @@ class _HomeContentState extends State<HomeContent> {
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+                    urlTemplate:
+                        'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
                     subdomains: ['a', 'b', 'c'],
                   ),
-
                 ],
               ),
               Positioned(
@@ -344,7 +367,12 @@ class _HomeContentState extends State<HomeContent> {
           children: [
             const Text(
               "Categories",
-              style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold,color: Color(0xff392515),fontFamily: 'Laila',),
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.bold,
+                color: Color(0xff392515),
+                fontFamily: 'Laila',
+              ),
             ),
             GestureDetector(
               onTap: () {
@@ -470,7 +498,10 @@ class _HomeContentState extends State<HomeContent> {
                 children: [
                   const Text(
                     "What to grow in",
-                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold,color: Color(0xff392515)),
+                    style: TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xff392515)),
                   ),
                   const SizedBox(width: 6),
                   // Filter Type Dropdown
@@ -494,7 +525,8 @@ class _HomeContentState extends State<HomeContent> {
                   if (_selectedFilterType == 'Season')
                     DropdownButton<String>(
                       value: _selectedSeason,
-                      items: ['Summer', 'Winter', 'Spring', 'All Year'].map((season) {
+                      items: ['Summer', 'Winter', 'Spring', 'All Year']
+                          .map((season) {
                         return DropdownMenuItem(
                           value: season,
                           child: Text(season),
@@ -511,7 +543,8 @@ class _HomeContentState extends State<HomeContent> {
                   if (_selectedFilterType == 'Soil')
                     DropdownButton<String>(
                       value: _selectedSoil,
-                      items: ['Loamy', 'Sandy', 'Well-drained', 'Moist'].map((soil) {
+                      items: ['Loamy', 'Sandy', 'Well-drained', 'Moist']
+                          .map((soil) {
                         return DropdownMenuItem(
                           value: soil,
                           child: Text(soil),
@@ -680,7 +713,8 @@ class _HomeContentState extends State<HomeContent> {
                 clipBehavior: Clip.antiAlias,
                 decoration: ShapeDecoration(
                   shape: RoundedRectangleBorder(
-                    side: const BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
+                    side:
+                        const BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
@@ -698,12 +732,15 @@ class _HomeContentState extends State<HomeContent> {
                       decoration: ShapeDecoration(
                         image: DecorationImage(
                           image: plant.imageUrls.isNotEmpty
-                              ? CachedNetworkImageProvider(plant.imageUrls.first)
-                              : const AssetImage('assets/placeholder_plant.png') as ImageProvider,
+                              ? CachedNetworkImageProvider(
+                                  plant.imageUrls.first)
+                              : const AssetImage('assets/placeholder_plant.png')
+                                  as ImageProvider,
                           fit: BoxFit.cover,
                         ),
                         shape: RoundedRectangleBorder(
-                          side: const BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
+                          side: const BorderSide(
+                              width: 0.10, color: Color(0xFF4C2B12)),
                         ),
                       ),
                     ),
@@ -736,19 +773,22 @@ class _HomeContentState extends State<HomeContent> {
                               ),
                               child: Center(
                                 child: Container(
-                                  width: 90, // Matching the size of the previous image
+                                  width: 90,
+                                  // Matching the size of the previous image
                                   height: 90,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color:  Color(0xffc3824d), // Circle border color
+                                      color: Color(0xffc3824d),
+                                      // Circle border color
                                       width: 5.2, // Thickness of the circle
                                     ),
                                   ),
                                   child: const Center(
                                     child: Icon(
                                       Icons.check,
-                                      color: Color(0xffc3824d), // Checkmark color
+                                      color: Color(0xffc3824d),
+                                      // Checkmark color
                                       size: 70, // Adjust size of the checkmark
                                     ),
                                   ),
@@ -866,13 +906,17 @@ class _HomeContentState extends State<HomeContent> {
           children: [
             const Text(
               "Community",
-              style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold,color: Color(0xff392515)),
+              style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xff392515)),
             ),
             GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CommunityPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const CommunityPage()),
                 );
               },
               child: Row(
