@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:releaf/UI/Home/homepage.dart';
+
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -39,7 +40,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     // Navigate to Homepage after successful sign-up
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) =>  Homepage()),
+      MaterialPageRoute(builder: (context) => Homepage()),
     );
   }
 
@@ -54,26 +55,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Releaf logo at the top
-  Container(
-  height: 300,
-  width:330,
-  decoration: BoxDecoration(
-  image: DecorationImage(
-  image: NetworkImage("assets/Releaf.png"),
-  fit: BoxFit.fill,
-  ),
-  ),
-  )
-              ,
-
-
+              Container(
+                height: 300,
+                width: 330,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/Releaf.png') as ImageProvider,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ),
 
               TextField(
                 cursorColor: const Color(0xFF609254),
                 controller: _usernameController,
                 decoration: InputDecoration(
                   labelText: 'Username',
-                  hintText: 'treelover',
+                  hintText: 'Username',
                   prefixIcon: Icon(Icons.person_outline),
                   labelStyle: const TextStyle(color: Colors.grey),
                   hintStyle: const TextStyle(color: Colors.grey),
@@ -105,11 +103,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   hintStyle: const TextStyle(color: Colors.grey),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
-                    borderSide: const BorderSide(color: Colors.green,width: 1),
+                    borderSide: const BorderSide(color: Colors.green, width: 1),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
-                    borderSide: const BorderSide(color: Colors.green,width: 1),
+                    borderSide: const BorderSide(color: Colors.green, width: 1),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
@@ -120,7 +118,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(height: 20),
 
               // Username TextField
-
 
               // Password TextField
               TextField(
@@ -151,35 +148,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
               // Sign Up Button
               SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _signUp,
-                  style: ElevatedButton.styleFrom(
-
-                    backgroundColor: const Color(0xFF3B812A),
-                    padding: const EdgeInsets.symmetric(vertical:25 ),
-
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(22),
-
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [ const Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                  ],
-                )
-                )
-              ),
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      onPressed: _signUp,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4F8541),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        ],
+                      ))),
               const SizedBox(height: 20),
 
               // Sign In Link
@@ -199,9 +192,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       );
                     },
                     child: const Text(
-                      'Sign in',
+                      'Log in',
                       style: TextStyle(
-                        color: Color(0xFF3B812A),
+                        color: Color(0xFF4F8541),
                         fontWeight: FontWeight.bold,
                       ),
                     ),

@@ -8,9 +8,11 @@ class SplashScreen extends StatefulWidget {
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _logoOpacity;
+  //late Animation<double> _logoOpacity;
   late Animation<double> _logoScale;
   late Animation<Offset> _logoPosition;
   late Animation<double> _textOpacity;
@@ -26,27 +28,35 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
 
     // Define animations
-    _logoOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.3, curve: Curves.easeIn)),
-    );
+    /*_logoOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+          parent: _controller,
+          curve: const Interval(0.0, 0.3, curve: Curves.easeIn)),
+    );*/
     _logoScale = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.3, curve: Curves.easeOut)),
+      CurvedAnimation(
+          parent: _controller,
+          curve: const Interval(0.0, 0.3, curve: Curves.easeOut)),
     );
     _logoPosition = Tween<Offset>(
       begin: const Offset(0.0, -0.2), // Start above center
-      end: const Offset(0.0, 0.0),   // Move to center to align with Releaf.png
-    ).animate(CurvedAnimation(parent: _controller, curve: const Interval(0.3, 0.6, curve: Curves.easeInOut)));
+      end: const Offset(0.0, 0.0), // Move to center to align with Releaf.png
+    ).animate(CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.3, 0.6, curve: Curves.easeInOut)));
     _textOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0.6, 1.0, curve: Curves.easeIn)),
+      CurvedAnimation(
+          parent: _controller,
+          curve: const Interval(0.6, 1.0, curve: Curves.easeIn)),
     );
 
     // Start the animation
     _controller.forward();
 
     // Navigate to Homepage after 2.5 seconds
-    Timer(const Duration(milliseconds: 2800), () {
+    Timer(const Duration(milliseconds: 2500), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => Homepage()),
+        MaterialPageRoute(builder: (context) => const Homepage()),
       );
     });
   }
@@ -70,7 +80,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               children: [
                 // Standalone logo animates in, scales, and moves, then disappears
                 Opacity(
-                  opacity: 1.0 - _textOpacity.value, // Fade out as text fades in
+                  opacity: 1.0 - _textOpacity.value,
+                  // Fade out as text fades in
                   child: Transform.scale(
                     scale: _logoScale.value,
                     child: Transform.translate(

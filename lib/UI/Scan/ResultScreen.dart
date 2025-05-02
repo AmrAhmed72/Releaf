@@ -1,28 +1,30 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
-// Screen to display both primary and secondary identification results
 class ResultScreen extends StatelessWidget {
   final String flowerInfoPrimary;
   final String flowerInfoSecondary;
   final String imagePath;
+  final bool isDiagnosis;
 
   const ResultScreen({
     super.key,
     required this.flowerInfoPrimary,
     required this.flowerInfoSecondary,
     required this.imagePath,
+    this.isDiagnosis = false,
   });
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffeef0e2),
+      backgroundColor: const Color(0xffeef0e2),
       appBar: AppBar(
         backgroundColor: const Color(0xffeef0e2),
         elevation: 0,
-        title: const Text(
-          'Identification Result',
-          style: TextStyle(
+        title: Text(
+          isDiagnosis ? 'Diagnosis Result' : 'Identification Result',
+          style: const TextStyle(
             color: Color(0xff392515),
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -39,7 +41,6 @@ class ResultScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Display the image
             Container(
               width: 400,
               height: 300,
@@ -52,9 +53,8 @@ class ResultScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            // Display the primary flower identification
             Text(
-              "Identification Name : ",
+              isDiagnosis ? "Disease Name:" : "Identification Name:",
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: const Color(0xFF609254),
                 fontWeight: FontWeight.bold,
@@ -69,9 +69,8 @@ class ResultScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            // Display the secondary flower identification
             Text(
-              "Description : ",
+              "Description:",
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: const Color(0xFF609254),
                 fontWeight: FontWeight.bold,

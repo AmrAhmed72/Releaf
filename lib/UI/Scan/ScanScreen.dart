@@ -6,8 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
 import '../../services/IdentifyApi.dart';
 import 'ResultScreen.dart';
-import 'snap_tips_dialog.dart'; // Import the utility file
-
+import 'snap_tips_dialog.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -20,31 +19,25 @@ class _CameraScreenState extends State<CameraScreen> {
   CameraController? _controller;
   Future<void>? _initializeControllerFuture;
   List<CameraDescription>? _cameras;
-  String? _imagePath; // To store the path of the captured or selected image
-  final ImagePicker _picker = ImagePicker(); // Initialize the ImagePicker
+  String? _imagePath;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
     _initializeCamera();
-    // Show the Snap Tips dialog as soon as the screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      showSnapTipsDialog(context, onContinue: () {
-        // No navigation needed, just close the dialog
-      });
+      showSnapTipsDialog(context, onContinue: () {});
     });
   }
 
   Future<void> _initializeCamera() async {
-    // Get the list of available cameras
     _cameras = await availableCameras();
     if (_cameras != null && _cameras!.isNotEmpty) {
-      // Select the rear camera (usually the first one)
       _controller = CameraController(
         _cameras![0],
         ResolutionPreset.high,
       );
-      // Initialize the controller
       _initializeControllerFuture = _controller!.initialize();
       setState(() {});
     }
@@ -56,25 +49,18 @@ class _CameraScreenState extends State<CameraScreen> {
     super.dispose();
   }
 
-  // Function to capture and save the photo
   Future<void> _capturePhoto() async {
     try {
-      // Ensure the camera is initialized
       await _initializeControllerFuture;
-
-      // Get the temporary directory to save the image
       final directory = await getTemporaryDirectory();
       final imagePath = path.join(
         directory.path,
         '${DateTime.now().millisecondsSinceEpoch}.jpg',
       );
-
-      // Capture the photo and save it to the specified path
       final XFile imageFile = await _controller!.takePicture();
       await imageFile.saveTo(imagePath);
-
       setState(() {
-        _imagePath = imagePath; // Store the path of the captured image
+        _imagePath = imagePath;
       });
     } catch (e) {
       print("Error capturing photo: $e");
@@ -84,17 +70,14 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  // Function to pick an image from the gallery
   Future<void> _pickImageFromGallery() async {
-    print("Photos button tapped"); // Debug print to confirm button tap
-
+    print("Photos button tapped");
     try {
-      // Use ImagePicker to select an image from the gallery
-      final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-
+      final XFile? pickedFile =
+          await _picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         setState(() {
-          _imagePath = pickedFile.path; // Store the path of the selected image
+          _imagePath = pickedFile.path;
         });
       } else {
         print("No image selected");
@@ -110,21 +93,25 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  // Function to identify the flower using the IdentifyApi
   Future<void> _identifyPlant() async {
-    if (_imagePath == null) return;
+    if (_imagePath == null) {
+      return;
+    }
+    print("Identifying image: $_imagePath");
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+          child: CircularProgressIndicator(color: Color(0xFF609254))),
+    );
 
     try {
-      // Call the IdentifyApi to identify the flower
       var result = await IdentifyApi.identifyFlower(_imagePath!);
-
-      // Extract primary and secondary identification
       var flowerInfoPrimary = result['primary'];
       var flowerInfoSecondary = result['secondary'];
       print("Primary identification: $flowerInfoPrimary");
       print("Secondary identification: $flowerInfoSecondary");
-
-      // Navigate to the ResultScreen with both pieces of information
+      Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -143,44 +130,82 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
+  Future<void> _diagnosePlant() async {
+    if (_imagePath == null) {
+      print("No image selected for diagnosis");
+      return;
+    }
+    print("Diagnosing image: $_imagePath");
+    showDialog(
+      barrierLabel: "Wait A Second,Please!",
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => const Center(child: CircularProgressIndicator(color: Color(0xFF609254))),
+    );
+    try {
+      var result = await IdentifyApi.predictDisease(_imagePath!);
+      print("Disease API response: $result");
+      var diseaseName = result['primary'];
+      var diseaseDescription = result['secondary'];
+      print("Disease: $diseaseName");
+      print("Description: $diseaseDescription");
+      Navigator.pop(context); // Close loading dialog
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResultScreen(
+            flowerInfoPrimary: diseaseName,
+            flowerInfoSecondary: diseaseDescription,
+            imagePath: _imagePath!,
+            isDiagnosis: true,
+          ),
+        ),
+      );
+    } catch (e) {
+      Navigator.pop(context); // Close loading dialog
+      print("Error diagnosing plant: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error diagnosing plant: $e")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Set background to black to avoid white spaces
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: Stack(
           children: [
-            // Full-screen camera preview or captured/selected image
             _imagePath == null
                 ? FutureBuilder<void>(
-              future: _initializeControllerFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  // Ensure the camera preview fills the entire screen
-                  return SizedBox.expand(
-                    child: FittedBox(
-                      fit: BoxFit.cover, // Scale the preview to cover the entire screen
-                      child: SizedBox(
-                        width: _controller!.value.previewSize!.height,
-                        height: _controller!.value.previewSize!.width,
-                        child: CameraPreview(_controller!),
-                      ),
-                    ),
-                  );
-                } else if (snapshot.hasError) {
-                  return const Center(child: Text("Error initializing camera"));
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
-              },
-            )
+                    future: _initializeControllerFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return SizedBox.expand(
+                          child: FittedBox(
+                            fit: BoxFit.cover,
+                            child: SizedBox(
+                              width: _controller!.value.previewSize!.height,
+                              height: _controller!.value.previewSize!.width,
+                              child: CameraPreview(_controller!),
+                            ),
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return const Center(
+                            child: Text("Error initializing camera"));
+                      } else {
+                        return const Center(child: CircularProgressIndicator(color: Color(0xFF609254)));
+                      }
+                    },
+                  )
                 : Positioned.fill(
-              child: Image.file(
-                File(_imagePath!),
-                fit: BoxFit.cover, // Scale the captured/selected image to cover the entire screen
-              ),
-            ),
-            // Dashed focus square with rounded corners (only show when camera preview is active)
+                    child: Image.file(
+                      File(_imagePath!),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
             if (_imagePath == null)
               Center(
                 child: CustomDashedBorder(
@@ -199,18 +224,16 @@ class _CameraScreenState extends State<CameraScreen> {
                   ),
                 ),
               ),
-            // Top bar with close button
             Positioned(
               top: 10,
               right: 10,
               child: IconButton(
                 icon: const Icon(Icons.close, color: Colors.white),
                 onPressed: () {
-                  Navigator.pop(context); // Close the screen
+                  Navigator.pop(context);
                 },
               ),
             ),
-            // Retake button (only show when an image is captured or selected)
             if (_imagePath != null)
               Positioned(
                 top: 60,
@@ -219,36 +242,30 @@ class _CameraScreenState extends State<CameraScreen> {
                   icon: const Icon(Icons.refresh, color: Colors.white),
                   onPressed: () {
                     setState(() {
-                      _imagePath = null; // Clear the image to show the camera preview again
+                      _imagePath = null;
                     });
                   },
                 ),
               ),
-            // Bottom bar with buttons
             Positioned(
               bottom: 0,
               left: 0,
               right: 0,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                color: const Color(0xFF609254), // Green bottom bar
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                color: const Color(0xFF609254),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    // Photos button
                     IconButton(
                       icon: const Icon(Icons.photo, color: Colors.white),
-                      onPressed: _pickImageFromGallery, // Call the function to pick an image
+                      onPressed: _pickImageFromGallery,
                     ),
-                    // Identify and Diagnose buttons
                     Row(
                       children: [
                         ElevatedButton(
-                          onPressed: _imagePath != null
-                              ? () {
-                            _identifyPlant(); // Call the flower identification function
-                          }
-                              : null,
+                          onPressed: _imagePath != null ? _identifyPlant : null,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: const Color(0xFF609254),
@@ -260,12 +277,7 @@ class _CameraScreenState extends State<CameraScreen> {
                         ),
                         const SizedBox(width: 10),
                         ElevatedButton(
-                          onPressed: _imagePath != null
-                              ? () {
-                            print("Diagnose button tapped with image: $_imagePath");
-                            // Add plant diagnosis logic here using _imagePath
-                          }
-                              : null,
+                          onPressed: _imagePath != null ? _diagnosePlant : null,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: const Color(0xFF609254),
@@ -277,27 +289,22 @@ class _CameraScreenState extends State<CameraScreen> {
                         ),
                       ],
                     ),
-                    // Snap Tips button
                     IconButton(
                       icon: const Icon(Icons.help_outline, color: Colors.white),
                       onPressed: () {
-                        // Show the Snap Tips dialog from within CameraScreen
-                        showSnapTipsDialog(context, onContinue: () {
-                          // No navigation needed here, just close the dialog
-                        });
+                        showSnapTipsDialog(context, onContinue: () {});
                       },
                     ),
                   ],
                 ),
               ),
             ),
-            // Camera shutter button (only show when camera preview is active)
             if (_imagePath == null)
               Positioned(
-                bottom: 100, // Adjusted to move the shutter button higher
+                bottom: 100,
                 left: MediaQuery.of(context).size.width / 2 - 30,
                 child: GestureDetector(
-                  onTap: _capturePhoto, // Call the capture photo function
+                  onTap: _capturePhoto,
                   child: Container(
                     width: 60,
                     height: 60,
@@ -325,7 +332,6 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 }
 
-// Custom widget for dashed border with rounded corners
 class CustomDashedBorder extends StatelessWidget {
   final double width;
   final double height;
@@ -367,7 +373,6 @@ class CustomDashedBorder extends StatelessWidget {
   }
 }
 
-// Custom painter to draw the dashed border with rounded corners
 class DashedBorderPainter extends CustomPainter {
   final double strokeWidth;
   final double dashLength;
@@ -394,7 +399,6 @@ class DashedBorderPainter extends CustomPainter {
     final double width = size.width;
     final double height = size.height;
 
-    // Top-left to top-right
     double x = cornerRadius;
     while (x < width - cornerRadius) {
       if (x + dashLength <= width - cornerRadius) {
@@ -407,7 +411,6 @@ class DashedBorderPainter extends CustomPainter {
       x += dashLength + dashGap;
     }
 
-    // Top-right corner
     path.moveTo(width - cornerRadius, 0);
     path.arcToPoint(
       Offset(width, cornerRadius),
@@ -415,7 +418,6 @@ class DashedBorderPainter extends CustomPainter {
       clockwise: true,
     );
 
-    // Right side
     double y = cornerRadius;
     while (y < height - cornerRadius) {
       if (y + dashLength <= height - cornerRadius) {
@@ -428,7 +430,6 @@ class DashedBorderPainter extends CustomPainter {
       y += dashLength + dashGap;
     }
 
-    // Bottom-right corner
     path.moveTo(width, height - cornerRadius);
     path.arcToPoint(
       Offset(width - cornerRadius, height),
@@ -436,7 +437,6 @@ class DashedBorderPainter extends CustomPainter {
       clockwise: true,
     );
 
-    // Bottom side
     x = width - cornerRadius;
     while (x > cornerRadius) {
       if (x - dashLength >= cornerRadius) {
@@ -449,7 +449,6 @@ class DashedBorderPainter extends CustomPainter {
       x -= (dashLength + dashGap);
     }
 
-    // Bottom-left corner
     path.moveTo(cornerRadius, height);
     path.arcToPoint(
       Offset(0, height - cornerRadius),
@@ -457,7 +456,6 @@ class DashedBorderPainter extends CustomPainter {
       clockwise: true,
     );
 
-    // Left side
     y = height - cornerRadius;
     while (y > cornerRadius) {
       if (y - dashLength >= cornerRadius) {
@@ -470,7 +468,6 @@ class DashedBorderPainter extends CustomPainter {
       y -= (dashLength + dashGap);
     }
 
-    // Top-left corner
     path.moveTo(0, cornerRadius);
     path.arcToPoint(
       Offset(cornerRadius, 0),
@@ -482,7 +479,5 @@ class DashedBorderPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

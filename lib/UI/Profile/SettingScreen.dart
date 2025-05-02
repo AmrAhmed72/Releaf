@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../signup/SignUpScreen.dart';
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -8,15 +10,16 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F5EC),
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50), // Set custom height for the AppBar
+        preferredSize: const Size.fromHeight(50),
+        // Set custom height for the AppBar
         child: AppBar(
-          backgroundColor: const Color(0xFF609254), // Green header background
-          elevation: 0, // Remove shadow for a cleaner look
+          backgroundColor: const Color(0xFF609254),
+          // Green header background
+          elevation: 0,
+          // Remove shadow for a cleaner look
           leading: IconButton(
             icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
+                Icons.arrow_back_ios_new, color: Color(0xFFF4F5EC)),
             onPressed: () {
               Navigator.pop(context); // Navigate back to ProfileScreen
             },
@@ -24,8 +27,8 @@ class SettingsScreen extends StatelessWidget {
           title: const Text(
             'Settings',
             style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
+              color: Color(0xFFF4F5EC),
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               fontFamily: 'Inter',
             ),
@@ -45,7 +48,7 @@ class SettingsScreen extends StatelessWidget {
                 _buildSettingsItem(
                   icon: Icons.diamond,
                   title: 'My Premium Service',
-                  subtitle: 'Membership Status: 500.LE',
+                  subtitle: 'Membership Status: 500.LE,allow +50 new identify',
                   onTap: () {
                     // Navigate to Premium Service screen
                   },
@@ -83,6 +86,11 @@ class SettingsScreen extends StatelessWidget {
                   icon: Icons.logout,
                   title: 'Log Out',
                   onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignUpScreen()),
+                    );
                     // Log out action
                   },
                 ),
@@ -94,6 +102,7 @@ class SettingsScreen extends StatelessWidget {
                   icon: Icons.security,
                   title: 'Privacy Policy',
                   onTap: () {
+
                     // Navigate to Privacy Policy screen
                   },
                 ),

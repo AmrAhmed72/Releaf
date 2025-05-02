@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:releaf/services/api_service.dart';
 import 'package:releaf/models/campaign.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CommunityPage extends StatefulWidget {
   const CommunityPage({super.key});
@@ -29,17 +30,17 @@ class _CommunityPageState extends State<CommunityPage> {
           backgroundColor: const Color(0xFF609254),
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xff392515)),
+            icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFFF4F5EC)),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
           title: const Text(
-            "Community",
+            "Campaigns",
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: Color(0xFFF4F5EC),
             ),
           ),
           centerTitle: true,
@@ -64,7 +65,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   future: _campaignsFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator(color: Color(0xFF609254)));
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -147,7 +148,7 @@ class _CommunityPageState extends State<CommunityPage> {
                         fontSize: 12,
                         fontFamily: 'Laila',
                       ),
-                      maxLines: 8,
+                      maxLines: 10,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -176,32 +177,16 @@ class _CommunityPageState extends State<CommunityPage> {
                 Icon(
                   Icons.wb_sunny,
                   color: Colors.orange,
-                  size: 32,
+                  size: 80,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 60),
                 Icon(
-                  Icons.park,
+                  FontAwesomeIcons.treeCity,
                   color: Colors.green,
-                  size: 32,
+                  size: 80,
                 ),
                 const SizedBox(height: 16),
-                Stack(
-                  children: [
-                    Icon(
-                      Icons.cloud,
-                      color: Colors.grey[400],
-                      size: 32,
-                    ),
-                    Positioned(
-                      left: 16,
-                      child: Icon(
-                        Icons.cloud,
-                        color: Colors.grey[400],
-                        size: 24,
-                      ),
-                    ),
-                  ],
-                ),
+
               ],
             ),
           ],

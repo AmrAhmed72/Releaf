@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:releaf/UI/Profile/CommunityScreen.dart';
 import 'SettingScreen.dart';
 import 'EditProfileScreen.dart';
+import 'package:releaf/data/Shared_Prefs/Shared_Prefs.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -14,18 +16,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, String> userDetails = {
     'name': 'Amr',
     'username': 'Egypt',
-    'quote': 'This oak tree and me, we\'re made of the same stuff.',
+    'quote': 'Add Your Quote Here!',
   };
+  File? _profileImage; // Store profile image
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  // Load profile data from SharedPrefs
+  Future<void> _loadProfileData() async {
+    final savedDetails = await SharedPrefs.loadProfileData();
+    setState(() {
+      userDetails['name'] = savedDetails['name'] ?? userDetails['name']!;
+      userDetails['username'] = savedDetails['username'] ?? userDetails['username']!;
+      userDetails['quote'] = savedDetails['quote'] ?? userDetails['quote']!;
+      final imagePath = savedDetails['profileImage'];
+      if (imagePath != null && File(imagePath).existsSync()) {
+        _profileImage = File(imagePath);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       backgroundColor: const Color(0xFFF4F5EC),
-
-
-
       body: SafeArea(
         child: Stack(
           children: [
@@ -34,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               left: 0,
               top: 0,
               child: Container(
-                width: MediaQuery.of(context).size.width, // Full width
+                width: MediaQuery.of(context).size.width,
                 height: 124,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
@@ -75,8 +93,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(60),
                             ),
-                            image: const DecorationImage(
-                              image: AssetImage('assets/Rectangle 73.png'),
+                            image: DecorationImage(
+                              image: _profileImage != null
+                                  ? FileImage(_profileImage!)
+                                  : const AssetImage('assets/profile.jpg') as ImageProvider,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -147,27 +167,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   _buildActionButton(
                     icon: Icons.person,
-                    title: 'profile',
+                    title: 'Profile',
                     subtitle: 'update your personal details',
                     onTap: () async {
+                      // Pass current userDetails and profileImage path
+                      final initialDetails = {
+                        'name': userDetails['name']!,
+                        'username': userDetails['username']!,
+                        'quote': userDetails['quote']!,
+                        'profileImage': _profileImage?.path, // Include current image path
+                      };
                       final updatedDetails = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => EditProfileScreen(
-                            initialDetails: userDetails,
+                            initialDetails: initialDetails,
                           ),
                         ),
                       );
                       if (updatedDetails != null) {
                         setState(() {
-                          userDetails = updatedDetails;
+                          userDetails = {
+                            'name': updatedDetails['name']!,
+                            'username': updatedDetails['username']!,
+                            'quote': updatedDetails['quote']!,
+                          };
+                          if (updatedDetails['profileImage'] != null &&
+                              File(updatedDetails['profileImage']!).existsSync()) {
+                            _profileImage = File(updatedDetails['profileImage']!);
+                          } else {
+                            _profileImage = null; // Clear image if removed
+                          }
                         });
+                        // Save updated details using SharedPrefs
+                        await SharedPrefs.saveProfileData(updatedDetails);
                       }
                     },
                   ),
                   _buildActionButton(
                     icon: Icons.settings,
-                    title: 'settings',
+                    title: 'Settings',
                     subtitle: 'settings and privacy',
                     onTap: () {
                       Navigator.push(
@@ -178,12 +217,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   _buildActionButton(
                     icon: Icons.group,
-                    title: 'community',
+                    title: 'Campaigns',
                     subtitle: 'connect with other gardeners',
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) =>  CommunityPage()),
+                        MaterialPageRoute(builder: (context) => const CommunityPage()),
                       );
                     },
                   ),
@@ -208,7 +247,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          width: double.infinity, // Full width
+          width: double.infinity,
           height: 71,
           decoration: ShapeDecoration(
             color: const Color(0xFFEEF0E2),
