@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../models/plant.dart';
 import '../../../services/api_service.dart';
+import '../../../services/plant_cache_service.dart';
 import 'PlantDetailScreen.dart';
 
 class AllPlantsScreen extends StatefulWidget {
@@ -13,16 +14,49 @@ class AllPlantsScreen extends StatefulWidget {
 
 class _AllPlantsScreenState extends State<AllPlantsScreen> {
   final ApiService _apiService = ApiService();
-  late Future<List<Plant>> _plantsFuture;
+  final PlantCacheService _plantCacheService = PlantCacheService();
+  late Future<List<Plant>> _plantsFuture = Future.value([]);
 
   @override
   void initState() {
     super.initState();
-    _plantsFuture = _apiService.getAllPlants();
+    _loadPlants();
   }
+
+  Future<void> _loadPlants() async {
+    // First try to get cached data
+    final cachedPlants = await _plantCacheService.getCachedPlants();
+    
+    if (cachedPlants != null) {
+      setState(() {
+        _plantsFuture = Future.value(cachedPlants);
+      });
+    }
+
+    // Then try to fetch fresh data from API
+    try {
+      final freshPlants = await _apiService.getAllPlants();
+      await _plantCacheService.cachePlants(freshPlants);
+      
+      if (mounted) {
+        setState(() {
+          _plantsFuture = Future.value(freshPlants);
+        });
+      }
+    } catch (e) {
+      print('Error fetching fresh plants: $e');
+      // If we have cached data, we'll use that instead
+      if (cachedPlants == null) {
+        setState(() {
+          _plantsFuture = Future.error('No internet connection and no cached data available');
+        });
+      }
+    }
+  }
+
   Future<void> _refreshPlants() async {
     setState(() {
-      _plantsFuture = _apiService.getAllPlants();
+      _loadPlants();
     });
   }
 

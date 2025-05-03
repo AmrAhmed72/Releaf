@@ -52,4 +52,17 @@ class Plant {
       day_vegetative: json['day_vegetative']?.toString() ?? 'Unknown',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'season': season,
+      'soil': soil,
+      'sunlight': sunlight,
+      'imageUrls': imageUrls,
+      'categoryId': categoryId,
+    };
+  }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:releaf/UI/Home/homepage.dart'; // Import your existing homepage
 import 'dart:async';
 
+import 'package:releaf/UI/signup/SignUpScreen.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -56,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen>
     // Navigate to Homepage after 2.5 seconds
     Timer(const Duration(milliseconds: 2500), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const Homepage()),
+        MaterialPageRoute(builder: (context) => const SignUpScreen()),
       );
     });
   }

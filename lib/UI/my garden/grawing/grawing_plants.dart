@@ -1,3 +1,5 @@
 import '../../../models/plant.dart';
+import '../../../services/growing_plants_service.dart';
 
-List<Plant> growingPlants = [];
+// Get the growing plants list from the service
+List<Plant> get growingPlants => GrowingPlantsService().growingPlants;

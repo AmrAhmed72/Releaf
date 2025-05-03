@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import '../../data/Shared_Prefs/Shared_Prefs.dart';
+
 
 class EditProfileScreen extends StatefulWidget {
   final Map<String, String?> initialDetails;
@@ -14,18 +16,17 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _nameController;
-  late TextEditingController _usernameController;
+  late TextEditingController _locationController;
   late TextEditingController _quoteController;
-  File? _profileImage; // Store selected profile image
+  File? _profileImage;
   final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.initialDetails['name']);
-    _usernameController = TextEditingController(text: widget.initialDetails['username']);
+    _locationController = TextEditingController(text: widget.initialDetails['username']);
     _quoteController = TextEditingController(text: widget.initialDetails['quote']);
-    // Initialize _profileImage from initialDetails if available and valid
     if (widget.initialDetails['profileImage'] != null) {
       final file = File(widget.initialDetails['profileImage']!);
       if (file.existsSync()) {
@@ -37,12 +38,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void dispose() {
     _nameController.dispose();
-    _usernameController.dispose();
+    _locationController.dispose();
     _quoteController.dispose();
     super.dispose();
   }
 
-  // Function to pick an image and save it to documents directory
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -54,6 +54,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _profileImage = savedImage;
       });
     }
+  }
+
+  Future<void> _saveProfile() async {
+    final updatedDetails = {
+      'name': _nameController.text,
+      'username': _locationController.text,
+      'quote': _quoteController.text,
+      'profileImage': _profileImage?.path,
+    };
+    await SharedPrefs.saveProfileData(updatedDetails);
+    Navigator.pop(context, updatedDetails);
   }
 
   @override
@@ -95,7 +106,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Profile photo section
                 Center(
                   child: Stack(
                     children: [
@@ -173,7 +183,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 TextField(
                   cursorColor: const Color(0xFF609254),
-                  controller: _usernameController,
+                  controller: _locationController,
                   decoration: const InputDecoration(
                     labelText: 'Location',
                     labelStyle: TextStyle(color: Colors.grey),
@@ -208,17 +218,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () {
-                    final updatedDetails = {
-                      'name': _nameController.text,
-                      'username': _usernameController.text,
-                      'quote': _quoteController.text,
-                      'profileImage': _profileImage?.path, // Pass image path
-                    };
-                    Navigator.pop(context, updatedDetails);
-                  },
-                  child: Center(
-                    child: const Text(
+                  onPressed: _saveProfile,
+                  child: const Center(
+                    child: Text(
                       'Save Changes',
                       style: TextStyle(color: Colors.white),
                     ),

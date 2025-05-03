@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:releaf/services/api_service.dart';
 import 'package:releaf/models/campaign.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:releaf/services/campaign_cache_service.dart';
 
 class CommunityPage extends StatefulWidget {
   const CommunityPage({super.key});
@@ -11,13 +12,53 @@ class CommunityPage extends StatefulWidget {
 }
 
 class _CommunityPageState extends State<CommunityPage> {
-  late Future<List<Campaign>> _campaignsFuture;
+  Future<List<Campaign>> _campaignsFuture = Future.value([]); // Initialize with empty list
   final ApiService _apiService = ApiService();
+  final CampaignCacheService _campaignCacheService = CampaignCacheService();
 
   @override
   void initState() {
     super.initState();
-    _campaignsFuture = _apiService.getAllCampaigns();
+    _loadCampaigns();
+  }
+
+  Future<void> _loadCampaigns() async {
+    try {
+      // First try to get cached data
+      final cachedCampaigns = await _campaignCacheService.getCachedCampaigns();
+      if (cachedCampaigns != null && cachedCampaigns.isNotEmpty) {
+        setState(() {
+          _campaignsFuture = Future.value(cachedCampaigns);
+        });
+      } else {
+        // If no cached data, fetch from API
+        setState(() {
+          _campaignsFuture = _apiService.getAllCampaigns();
+        });
+      }
+
+      // Try to fetch fresh data in the background
+      try {
+        final freshCampaigns = await _apiService.getAllCampaigns();
+        if (freshCampaigns.isNotEmpty) {
+          await _campaignCacheService.cacheCampaigns(freshCampaigns);
+          if (mounted) {
+            setState(() {
+              _campaignsFuture = Future.value(freshCampaigns);
+            });
+          }
+        }
+      } catch (e) {
+        print('Error fetching fresh campaigns: $e');
+        // Continue using cached data
+      }
+    } catch (e) {
+      print('Error loading campaigns: $e');
+      // If all else fails, fetch from API
+      setState(() {
+        _campaignsFuture = _apiService.getAllCampaigns();
+      });
+    }
   }
 
   @override
@@ -186,7 +227,6 @@ class _CommunityPageState extends State<CommunityPage> {
                   size: 80,
                 ),
                 const SizedBox(height: 16),
-
               ],
             ),
           ],
