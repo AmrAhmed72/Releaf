@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../models/plant.dart';
-import '../my garden/grawing/grawing_plants.dart';
-import '../my garden/planning/planned_plants.dart';
+import '../../../models/plant.dart';
+
+import '../../my garden/grawing/grawing_plants.dart';
+import '../../my garden/planning/planned_plants.dart';
 
 class PlantDetailScreen extends StatelessWidget {
   final Plant plant;
