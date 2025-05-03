@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../models/plant.dart';
-
-import '../../my garden/grawing/grawing_plants.dart';
+import '../../../services/growing_plants_service.dart';
 import '../../my garden/planning/planned_plants.dart';
 
 class PlantDetailScreen extends StatelessWidget {
@@ -12,6 +11,8 @@ class PlantDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isGrowing = GrowingPlantsService().isPlantGrowing(plant);
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(45),
@@ -68,7 +69,7 @@ class PlantDetailScreen extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(16),
               child: Text(
                 plant.name,
                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold,color: Color(0xff392515)),
@@ -102,11 +103,9 @@ class PlantDetailScreen extends StatelessWidget {
               child: Column(
                 children: [
                   ConditionRow(
-
                     icon: Icons.thermostat,
                     label: 'Temperature',
                     value: plant.temperature,
-
                   ),
                   const SizedBox(height: 8.0),
                   ConditionRow(
@@ -120,7 +119,6 @@ class PlantDetailScreen extends StatelessWidget {
                     label: 'Soil',
                     value: plant.soil,
                   ),
-
                   const SizedBox(height: 8.0),
                   ConditionRow(
                     icon: Icons.water_drop,
@@ -199,62 +197,62 @@ class PlantDetailScreen extends StatelessWidget {
                   Container(
                     margin: const EdgeInsets.only(right: 16.0),
                     child: ElevatedButton(
-                        onPressed: () {
-                          if (!plannedPlants.contains(plant)) {
-                            plannedPlants.add(plant);
-                          }
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                backgroundColor: const Color(0xFFEEF0E2),
-                                content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      width: 162,
-                                      height: 142,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                        color: const Color(0xffeef0e2),
-                                      ),
-                                      child: Center(
-                                        child: Container(
-                                          width: 90, // Matching the size of the previous image
-                                          height: 90,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color:  Color(0xffc3824d), // Circle border color
-                                              width: 5.2, // Thickness of the circle
-                                            ),
+                      onPressed: () {
+                        if (!plannedPlants.contains(plant)) {
+                          plannedPlants.add(plant);
+                        }
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              backgroundColor: const Color(0xFFEEF0E2),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 162,
+                                    height: 142,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      color: const Color(0xffeef0e2),
+                                    ),
+                                    child: Center(
+                                      child: Container(
+                                        width: 90,
+                                        height: 90,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: Color(0xffc3824d),
+                                            width: 5.2,
                                           ),
-                                          child: const Center(
-                                            child: Icon(
-                                              Icons.check,
-                                              color: Color(0xffc3824d), // Checkmark color
-                                              size: 70, // Adjust size of the checkmark
-                                            ),
+                                        ),
+                                        child: const Center(
+                                          child: Icon(
+                                            Icons.check,
+                                            color: Color(0xffc3824d),
+                                            size: 70,
                                           ),
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(height: 12),
-                                    const Text(
-                                      'Add to planning',
-                                      style: TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xffc3824d),
-                                      ),
-                                      textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  const Text(
+                                    'Add to planning',
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xffc3824d),
                                     ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        },
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[200],
                         foregroundColor: Colors.black,
@@ -276,65 +274,120 @@ class PlantDetailScreen extends StatelessWidget {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      // Add plant to growingPlants if not already added
-                      if (!growingPlants.contains(plant)) {
-                        growingPlants.add(plant);
-                      }
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            backgroundColor: const Color(0xFFEEF0E2),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 162,
-                                  height: 142,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    color: const Color(0xffeef0e2),
-                                  ),
-                                  child: Center(
-                                    child: Container(
-                                      width: 90, // Matching the size of the previous image
-                                      height: 90,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color:  Color(0xffc3824d), // Circle border color
-                                          width: 5.2, // Thickness of the circle
+                    onPressed: isGrowing
+                        ? null // Disable button if already growing
+                        : () {
+                      if (GrowingPlantsService().isPlantGrowing(plant)) {
+                        // Show message that plant is already growing
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              backgroundColor: const Color(0xFFEEF0E2),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 162,
+                                    height: 142,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      color: const Color(0xffeef0e2),
+                                    ),
+                                    child: Center(
+                                      child: Container(
+                                        width: 90,
+                                        height: 90,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: Color(0xffc3824d),
+                                            width: 5.2,
+                                          ),
                                         ),
-                                      ),
-                                      child: const Center(
-                                        child: Icon(
-                                          Icons.check,
-                                          color: Color(0xffc3824d), // Checkmark color
-                                          size: 70, // Adjust size of the checkmark
+                                        child: const Center(
+                                          child: Icon(
+                                            Icons.info,
+                                            color: Color(0xffc3824d),
+                                            size: 70,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 12),
-                                const Text(
-                                  'Add to Growing',
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xffc3824d),
+                                  const SizedBox(height: 12),
+                                  const Text(
+                                    'Already Growing',
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xffc3824d),
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      } else {
+                        // Add the plant and show success message
+                        GrowingPlantsService().addPlant(plant);
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              backgroundColor: const Color(0xFFEEF0E2),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 162,
+                                    height: 142,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      color: const Color(0xffeef0e2),
+                                    ),
+                                    child: Center(
+                                      child: Container(
+                                        width: 90,
+                                        height: 90,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: Color(0xffc3824d),
+                                            width: 5.2,
+                                          ),
+                                        ),
+                                        child: const Center(
+                                          child: Icon(
+                                            Icons.check,
+                                            color: Color(0xffc3824d),
+                                            size: 70,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  const Text(
+                                    'Add to Growing',
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xffc3824d),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF51B661),
+                      backgroundColor: isGrowing ? Colors.grey[400] : const Color(0xFF51B661),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
                       shape: RoundedRectangleBorder(
@@ -342,12 +395,12 @@ class PlantDetailScreen extends StatelessWidget {
                         side: const BorderSide(color: Colors.grey, width: 1.0),
                       ),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Growing it 🌿',
-                          style: TextStyle(fontSize: 15,color: Color(0xFFF4F5EC)),
+                          isGrowing ? 'Growing 🌿' : 'Growing it 🌿',
+                          style: const TextStyle(fontSize: 15, color: Color(0xFFF4F5EC)),
                         ),
                       ],
                     ),

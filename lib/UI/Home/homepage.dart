@@ -12,16 +12,19 @@ import 'package:releaf/UI/Home/Category/category_detail_screen.dart';
 import 'package:releaf/UI/Home/Plants/all_plants_screen.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // Import models
 import 'package:releaf/models/category.dart';
-import 'package:releaf/models/CommunityEvent.dart';
+import 'package:releaf/models/campaign.dart';
 import 'package:releaf/models/plant.dart';
 
 // Import data
 import 'package:releaf/data/categories.dart';
-import 'package:releaf/data/CommunityEvents.dart';
 import 'package:releaf/services/api_service.dart';
+import 'package:releaf/services/campaign_cache_service.dart';
+import 'package:releaf/services/plant_cache_service.dart';
+import '../../services/growing_plants_service.dart';
 import '../my garden/grawing/grawing_plants.dart';
 
 class Homepage extends StatefulWidget {
@@ -41,7 +44,6 @@ class _HomepageState extends State<Homepage> {
   void initState() {
     super.initState();
     // Initialize _screens with the callback for map banner
-
     _screens = [
       HomeContent(
         onMapBannerTapped: () {
@@ -123,23 +125,119 @@ class HomeContent extends StatefulWidget {
 class _HomeContentState extends State<HomeContent> {
   bool _isChecked = false;
   final ApiService _apiService = ApiService();
-  late Future<List<Plant>> _plantsFuture;
-  String _selectedFilterType =
-      'Season'; // Track filter type (Season, Soil, Sunlight)
+  final CampaignCacheService _campaignCacheService = CampaignCacheService();
+  final PlantCacheService _plantCacheService = PlantCacheService();
+  Future<List<Plant>> _plantsFuture =
+      Future.value([]); // Initialize with empty list
+  Future<List<Campaign>> _campaignsFuture =
+      Future.value([]); // Initialize with empty list
+  String _selectedFilterType = 'Season';
   String _selectedSeason = 'Summer';
   String _selectedSoil = 'Loamy';
   String _selectedSunlight = 'Full Sun';
+  List<Plant> growingPlants =
+      []; // Define growingPlants to fix undefined reference
 
   @override
   void initState() {
     super.initState();
-    _plantsFuture = _apiService.getAllPlants();
+    _loadPlants();
+    _loadCampaigns();
   }
 
-  Future<void> _refreshPlants() async {
-    setState(() {
-      _plantsFuture = _apiService.getAllPlants();
+  Future<void> _loadPlants() async {
+    try {
+      // First try to get cached data
+      final cachedPlants = await _plantCacheService.getCachedPlants();
+      if (cachedPlants != null && cachedPlants.isNotEmpty) {
+        setState(() {
+          _plantsFuture = Future.value(cachedPlants);
+        });
+      } else {
+        // If no cached data, fetch from API
+        setState(() {
+          _plantsFuture = _apiService.getAllPlants();
+        });
+      }
 
+      // Try to fetch fresh data in the background
+      try {
+        final freshPlants = await _apiService.getAllPlants();
+        if (freshPlants.isNotEmpty) {
+          await _plantCacheService.cachePlants(freshPlants);
+          if (mounted) {
+            setState(() {
+              _plantsFuture = Future.value(freshPlants);
+            });
+          }
+        }
+      } catch (e) {
+        print('Error fetching fresh plants: $e');
+        // Continue using cached data
+      }
+    } catch (e) {
+      print('Error loading plants: $e');
+      // If all else fails, fetch from API
+      setState(() {
+        _plantsFuture = _apiService.getAllPlants();
+      });
+    }
+  }
+
+  Future<void> _loadCampaigns() async {
+    try {
+      // First try to get cached data
+      final cachedCampaigns = await _campaignCacheService.getCachedCampaigns();
+      if (cachedCampaigns != null && cachedCampaigns.isNotEmpty) {
+        setState(() {
+          _campaignsFuture = Future.value(cachedCampaigns);
+        });
+      } else {
+        // If no cached data, fetch from API
+        setState(() {
+          _campaignsFuture = _apiService.getAllCampaigns();
+        });
+      }
+
+      // Try to fetch fresh data in the background
+      try {
+        final freshCampaigns = await _apiService.getAllCampaigns();
+        if (freshCampaigns.isNotEmpty) {
+          await _campaignCacheService.cacheCampaigns(freshCampaigns);
+          if (mounted) {
+            setState(() {
+              _campaignsFuture = Future.value(freshCampaigns);
+            });
+          }
+        }
+      } catch (e) {
+        print('Error fetching fresh campaigns: $e');
+        // Continue using cached data
+      }
+    } catch (e) {
+      print('Error loading campaigns: $e');
+      // If all else fails, fetch from API
+      setState(() {
+        _campaignsFuture = _apiService.getAllCampaigns();
+      });
+    }
+  }
+
+  Future<void> _refreshHome() async {
+    setState(() {
+      _plantsFuture = _apiService.getAllPlants().then((freshPlants) async {
+        if (freshPlants.isNotEmpty) {
+          await _plantCacheService.cachePlants(freshPlants);
+        }
+        return freshPlants;
+      });
+      _campaignsFuture =
+          _apiService.getAllCampaigns().then((freshCampaigns) async {
+        if (freshCampaigns.isNotEmpty) {
+          await _campaignCacheService.cacheCampaigns(freshCampaigns);
+        }
+        return freshCampaigns;
+      });
     });
   }
 
@@ -167,7 +265,7 @@ class _HomeContentState extends State<HomeContent> {
       child: RefreshIndicator(
         color: Color(0xFF609254),
         backgroundColor: Color(0xFFF4F5EC),
-        onRefresh: _refreshPlants,
+        onRefresh: _refreshHome,
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -753,9 +851,7 @@ class _HomeContentState extends State<HomeContent> {
               top: 124,
               child: GestureDetector(
                 onTap: () {
-                  if (!growingPlants.contains(plant)) {
-                    growingPlants.add(plant);
-                  }
+                  GrowingPlantsService().isPlantGrowing(plant);
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -944,14 +1040,45 @@ class _HomeContentState extends State<HomeContent> {
         const SizedBox(height: 10),
         SizedBox(
           height: 100,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: communityEvents.length,
-            itemBuilder: (context, index) {
-              final event = communityEvents[index];
-              return Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: _communityCard(event),
+          child: FutureBuilder<List<Campaign>>(
+            future: _campaignsFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF609254),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    'Error: ${snapshot.error}',
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                );
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No campaigns available',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                );
+              }
+
+              final campaigns = snapshot.data!;
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: campaigns.length,
+                itemBuilder: (context, index) {
+                  final campaign = campaigns[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: _communityCard(campaign),
+                  );
+                },
               );
             },
           ),
@@ -960,7 +1087,7 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 
-  Widget _communityCard(CommunityEvent event) {
+  Widget _communityCard(Campaign campaign) {
     return Container(
       width: 251,
       height: 100,
@@ -995,7 +1122,7 @@ class _HomeContentState extends State<HomeContent> {
             child: SizedBox(
               width: 236,
               child: Text(
-                event.title,
+                campaign.title,
                 style: const TextStyle(
                   color: Color(0xFFC3824D),
                   fontSize: 14,
@@ -1009,7 +1136,7 @@ class _HomeContentState extends State<HomeContent> {
             left: 15,
             top: 68,
             child: Text(
-              event.date,
+              campaign.date,
               style: const TextStyle(
                 color: Color(0xFF4C2B12),
                 fontSize: 12,
@@ -1022,7 +1149,7 @@ class _HomeContentState extends State<HomeContent> {
             left: 156,
             top: 70,
             child: Text(
-              event.link,
+              campaign.link,
               style: const TextStyle(
                 color: Color(0xFF609254),
                 fontSize: 10,

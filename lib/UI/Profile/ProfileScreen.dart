@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:releaf/UI/Profile/CommunityScreen.dart';
-import 'SettingScreen.dart';
-import 'EditProfileScreen.dart';
-import 'package:releaf/data/Shared_Prefs/Shared_Prefs.dart';
+import 'package:releaf/UI/Profile/SettingScreen.dart';
+import 'package:releaf/UI/Profile/EditProfileScreen.dart';
+
+import '../../data/Shared_Prefs/Shared_Prefs.dart';
+
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -13,12 +15,13 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  Map<String, String> userDetails = {
-    'name': 'Amr',
-    'username': 'Egypt',
-    'quote': 'Add Your Quote Here!',
+  Map<String, String?> userDetails = {
+    'name': '',
+    'username': '',
+    'quote': '',
+    'profileImage': null,
   };
-  File? _profileImage; // Store profile image
+  File? _profileImage;
 
   @override
   void initState() {
@@ -26,16 +29,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadProfileData();
   }
 
-  // Load profile data from SharedPrefs
   Future<void> _loadProfileData() async {
     final savedDetails = await SharedPrefs.loadProfileData();
     setState(() {
-      userDetails['name'] = savedDetails['name'] ?? userDetails['name']!;
-      userDetails['username'] = savedDetails['username'] ?? userDetails['username']!;
-      userDetails['quote'] = savedDetails['quote'] ?? userDetails['quote']!;
+      userDetails['name'] = savedDetails['name']?.isNotEmpty ?? false
+          ? savedDetails['name']
+          : 'User';
+      userDetails['username'] = savedDetails['username']?.isNotEmpty ?? false
+          ? savedDetails['username']
+          : 'Location';
+      userDetails['quote'] = savedDetails['quote']?.isNotEmpty ?? false
+          ? savedDetails['quote']
+          : 'Add Your Quote Here!';
       final imagePath = savedDetails['profileImage'];
       if (imagePath != null && File(imagePath).existsSync()) {
         _profileImage = File(imagePath);
+      } else {
+        _profileImage = null;
       }
     });
   }
@@ -47,7 +57,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Background image at the top
             Positioned(
               left: 0,
               top: 0,
@@ -62,12 +71,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-            // Main content with ListView
             Positioned.fill(
               child: ListView(
                 children: [
                   const SizedBox(height: 50),
-                  // Profile picture
                   Center(
                     child: Container(
                       width: 120,
@@ -105,15 +112,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  // User details
                   Center(
                     child: Text(
                       userDetails['name']!,
                       style: const TextStyle(
                         color: Color(0xFF3B812A),
-                        fontSize: 20,
+                        fontSize: 22,
                         fontFamily: 'Inter',
-                        fontWeight: FontWeight.w400,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -124,14 +130,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         const Icon(
                           Icons.location_on,
-                          size: 12,
+                          size: 14,
                           color: Color(0xFF9F8470),
                         ),
                         Text(
                           userDetails['username']!,
                           style: const TextStyle(
                             color: Color(0xFF9F8470),
-                            fontSize: 12,
+                            fontSize: 14,
                             fontFamily: 'Inter',
                             fontWeight: FontWeight.w400,
                           ),
@@ -148,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: Color(0xFF9F8571),
-                          fontSize: 10,
+                          fontSize: 13,
                           fontFamily: 'Laila',
                           fontWeight: FontWeight.w400,
                         ),
@@ -156,58 +162,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 30),
-                  // Action buttons
                   _buildActionButton(
                     icon: Icons.photo_album,
-                    title: 'album',
-                    subtitle: 'all your saved memories in one place',
-                    onTap: () {
-                      // Add navigation or action for album
-                    },
+                    title: 'Album',
+                    subtitle: 'All your saved memories in one place',
+                    onTap: () {},
                   ),
                   _buildActionButton(
                     icon: Icons.person,
                     title: 'Profile',
-                    subtitle: 'update your personal details',
+                    subtitle: 'Update your personal details',
                     onTap: () async {
-                      // Pass current userDetails and profileImage path
-                      final initialDetails = {
-                        'name': userDetails['name']!,
-                        'username': userDetails['username']!,
-                        'quote': userDetails['quote']!,
-                        'profileImage': _profileImage?.path, // Include current image path
-                      };
                       final updatedDetails = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => EditProfileScreen(
-                            initialDetails: initialDetails,
+                            initialDetails: userDetails,
                           ),
                         ),
                       );
                       if (updatedDetails != null) {
                         setState(() {
-                          userDetails = {
-                            'name': updatedDetails['name']!,
-                            'username': updatedDetails['username']!,
-                            'quote': updatedDetails['quote']!,
-                          };
+                          userDetails = updatedDetails;
                           if (updatedDetails['profileImage'] != null &&
                               File(updatedDetails['profileImage']!).existsSync()) {
                             _profileImage = File(updatedDetails['profileImage']!);
                           } else {
-                            _profileImage = null; // Clear image if removed
+                            _profileImage = null;
                           }
                         });
-                        // Save updated details using SharedPrefs
-                        await SharedPrefs.saveProfileData(updatedDetails);
                       }
                     },
                   ),
                   _buildActionButton(
                     icon: Icons.settings,
                     title: 'Settings',
-                    subtitle: 'settings and privacy',
+                    subtitle: 'Settings and privacy',
                     onTap: () {
                       Navigator.push(
                         context,
@@ -218,7 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildActionButton(
                     icon: Icons.group,
                     title: 'Campaigns',
-                    subtitle: 'connect with other gardeners',
+                    subtitle: 'Connect with other gardeners',
                     onTap: () {
                       Navigator.push(
                         context,
