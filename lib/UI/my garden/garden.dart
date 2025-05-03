@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:releaf/UI/my%20garden/planning/planned_plants.dart';
+import 'package:releaf/UI/my%20garden/reminder/reminder_card.dart';
+import 'package:releaf/UI/my%20garden/reminder/reminer_utils.dart';
 import '../../models/plant.dart';
 import 'grawing/grawing card.dart';
 import 'grawing/grawing_plants.dart';
-import 'reminder.dart'; // For AddReminderDialog and ReminderCard
-import 'planning/plan_card.dart'; // For PlanCard
+import 'planning/plan_card.dart';
+
 
 class MyGarden extends StatefulWidget {
   const MyGarden({super.key});
@@ -15,10 +17,9 @@ class MyGarden extends StatefulWidget {
 }
 
 class _MyGardenState extends State<MyGarden> {
-  String _selectedCategory = "Growing"; // Default category
-  String _selectedDay = "Monday"; // For Reminders section
+  String _selectedCategory = "Growing";
+  String _selectedDay = "Monday";
 
-  // List of weekdays for Reminders
   final List<String> _weekdays = [
     "Monday",
     "Tuesday",
@@ -32,7 +33,6 @@ class _MyGardenState extends State<MyGarden> {
   @override
   void initState() {
     super.initState();
-    // Check for passed arguments when the screen is initialized
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final args = ModalRoute.of(context)?.settings.arguments;
       if (args is Map<String, dynamic>) {
@@ -52,7 +52,6 @@ class _MyGardenState extends State<MyGarden> {
     });
   }
 
-  // Function to show the weekday selection dialog for Reminders
   void _showWeekdaySelectionDialog() {
     showDialog(
       context: context,
@@ -94,7 +93,12 @@ class _MyGardenState extends State<MyGarden> {
     );
   }
 
-  // Method to build the content based on the selected category
+  void _deleteReminder(int index) {
+    setState(() {
+      reminders.removeAt(index);
+    });
+  }
+
   Widget _buildContent(ScrollController controller) {
     switch (_selectedCategory) {
       case "Planning":
@@ -103,7 +107,7 @@ class _MyGardenState extends State<MyGarden> {
             : ListView.builder(
           controller: controller,
           physics: const ClampingScrollPhysics(),
-          padding: const EdgeInsets.all(1),
+          padding: const EdgeInsets.all(15.0),
           itemCount: plannedPlants.length,
           itemBuilder: (context, index) {
             final plant = plannedPlants[index];
@@ -128,18 +132,17 @@ class _MyGardenState extends State<MyGarden> {
             : ListView.builder(
           controller: controller,
           physics: const ClampingScrollPhysics(),
-          padding: const EdgeInsets.all(1),
+          padding: const EdgeInsets.all(15.0),
           itemCount: growingPlants.length,
           itemBuilder: (context, index) {
             final plant = growingPlants[index];
             return Column(
               children: [
                 GrowingCard(
-                  plant: plant,
                   plantName: plant.name,
-                  growthStage: 'Vegetative', // Placeholder, adjust as needed
-                  imageUrl:
-                  plant.imageUrls.isNotEmpty ? plant.imageUrls.first : '',
+                  plant: plant,
+                  growthStage: 'Vegetative',
+                  imageUrl: plant.imageUrls.isNotEmpty ? plant.imageUrls.first : '',
                 ),
                 const SizedBox(height: 16),
               ],
@@ -147,6 +150,10 @@ class _MyGardenState extends State<MyGarden> {
           },
         );
       case "Reminders":
+        final filteredReminders = reminders.where((reminder) {
+          final dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(_selectedDay);
+          return reminder.repeatDays[dayIndex];
+        }).toList();
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -174,23 +181,19 @@ class _MyGardenState extends State<MyGarden> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: ListView(
+              child: ListView.builder(
                 controller: controller,
-                children: const [
-                  ReminderCard(
-                    title: 'Water',
-                    plantName: 'Radish!',
-                    description: 'Radish is to be watered at 8 am',
-                    icon: Icons.water_drop,
-                  ),
-                  SizedBox(height: 16),
-                  ReminderCard(
-                    title: 'Fertilize',
-                    plantName: 'Onions!',
-                    description: 'Onions is to be fertilized at 8 am',
-                    icon: Icons.local_florist,
-                  ),
-                ],
+                itemCount: filteredReminders.length,
+                itemBuilder: (context, index) {
+                  final reminder = filteredReminders[index];
+                  return ReminderCard(
+                    title: reminder.type == 'water' ? 'Water' : 'Fertilize',
+                    plantName: reminder.plant.name,
+                    description: '${reminder.plant.name} is to be ${reminder.type == 'water' ? 'watered' : 'fertilized'} at ${reminder.dateTime.hour.toString().padLeft(2, '0')}:${reminder.dateTime.minute.toString().padLeft(2, '0')} on ${reminder.dateTime.day}/${reminder.dateTime.month}/${reminder.dateTime.year}',
+                    icon: reminder.type == 'water' ? Icons.water_drop : Icons.local_florist,
+                    onCheck: () => _deleteReminder(reminders.indexOf(reminder)),
+                  );
+                },
               ),
             ),
           ],
@@ -202,8 +205,7 @@ class _MyGardenState extends State<MyGarden> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
+    return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -233,29 +235,17 @@ class _MyGardenState extends State<MyGarden> {
                                 _selectedCategory = "Planning";
                               });
                             },
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "Planning",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: _selectedCategory == "Planning"
-                                        ? const Color(0xff609254)
-                                        : const Color(0xff392515),
-                                    fontWeight: _selectedCategory == "Planning"
-                                        ? FontWeight.w600
-                                        : FontWeight.w400,
-                                  ),
-                                ),
-                                Container(
-                                  height: 3, // Increased for bolder line
-                                  width: 55,
-                                  color: _selectedCategory == "Planning"
-                                      ? const Color(0xff609254)
-                                      : Colors.transparent,
-                                ),
-                              ],
+                            child: Text(
+                              "Planning",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: _selectedCategory == "Planning"
+                                    ? const Color(0xff609254)
+                                    : const Color(0xff392515),
+                                fontWeight: _selectedCategory == "Planning"
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                              ),
                             ),
                           ),
                           GestureDetector(
@@ -264,29 +254,17 @@ class _MyGardenState extends State<MyGarden> {
                                 _selectedCategory = "Growing";
                               });
                             },
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "Growing",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: _selectedCategory == "Growing"
-                                        ? const Color(0xff609254)
-                                        : const Color(0xff392515),
-                                    fontWeight: _selectedCategory == "Growing"
-                                        ? FontWeight.w600
-                                        : FontWeight.w400,
-                                  ),
-                                ),
-                                Container(
-                                  height: 3, // Increased for bolder line
-                                  width: 55,
-                                  color: _selectedCategory == "Growing"
-                                      ? const Color(0xff609254)
-                                      : Colors.transparent,
-                                ),
-                              ],
+                            child: Text(
+                              "Growing",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: _selectedCategory == "Growing"
+                                    ? const Color(0xff609254)
+                                    : const Color(0xff392515),
+                                fontWeight: _selectedCategory == "Growing"
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                              ),
                             ),
                           ),
                           GestureDetector(
@@ -295,29 +273,17 @@ class _MyGardenState extends State<MyGarden> {
                                 _selectedCategory = "Reminders";
                               });
                             },
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "Reminders",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: _selectedCategory == "Reminders"
-                                        ? const Color(0xff609254)
-                                        : const Color(0xff392515),
-                                    fontWeight: _selectedCategory == "Reminders"
-                                        ? FontWeight.w600
-                                        : FontWeight.w400,
-                                  ),
-                                ),
-                                Container(
-                                  height: 3, // Increased for bolder line
-                                  width: 70,
-                                  color: _selectedCategory == "Reminders"
-                                      ? const Color(0xff609254)
-                                      : Colors.transparent,
-                                ),
-                              ],
+                            child: Text(
+                              "Reminders",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: _selectedCategory == "Reminders"
+                                    ? const Color(0xff609254)
+                                    : const Color(0xff392515),
+                                fontWeight: _selectedCategory == "Reminders"
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                              ),
                             ),
                           ),
                         ],
@@ -345,6 +311,6 @@ class _MyGardenState extends State<MyGarden> {
           size: 30,
         ),
       ),
-    ));
+    );
   }
 }

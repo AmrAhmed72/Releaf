@@ -230,7 +230,7 @@ class _MapScreenState extends State<MapScreen> {
             DraggableScrollableSheet(
               initialChildSize: 0.6, // Match MyGarden
               minChildSize: 0.3,
-              maxChildSize: 1,
+              maxChildSize: 0.6,
               builder: (BuildContext context, ScrollController scrollController) {
                 return ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),

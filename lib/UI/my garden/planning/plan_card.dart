@@ -15,188 +15,197 @@ class PlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-      return Card(
-        elevation: 2,
-        color: const Color(0xffeef0e2),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+    return Container(
+      width: 380,
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: const Color(0xff4C2B12),
+          width: 0.5,
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl: plant.imageUrls.isNotEmpty ? plant.imageUrls.first : '',
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(
-                      child: CircularProgressIndicator(
-                        color: Color(0xFF609254),
-                      ),
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Card(
+        color: const Color(0xffeef0e2),
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Top content
+            Padding(
+              padding: const EdgeInsets.only(left: 16, top: 18),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    errorWidget: (context, url, error) => const Center(
-                      child: Text(
-                        'No Image',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: CachedNetworkImage(
+                        imageUrl: plant.imageUrls.isNotEmpty
+                            ? plant.imageUrls.first
+                            : '',
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFF609254),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => const Center(
+                          child: Text(
+                            'No Image',
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        plant.name,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff392515),
-                        ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 14, top: 18.5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            plant.name,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff4c2b12),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'season: ${plant.season ?? 'Unknown'}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Color(0xff22160d),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'season: ${plant.season ?? 'Unknown'}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xff22160d),
-                        ),
+                    ),
+                  ),
+                  PopupMenuButton<String>(
+                    onSelected: (value) {
+                      if (value == 'remove') {
+                        onRemove();
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => [
+                      const PopupMenuItem<String>(
+                        value: 'remove',
+                        child: Text('Remove'),
                       ),
                     ],
-                  ),
-                ),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 40), // Shift 5 pixels to the right
-                    child: PopupMenuButton<String>(
-                      onSelected: (value) {
-                        if (value == 'remove') {
-                          onRemove();
-                        }
-                      },
-                      itemBuilder: (BuildContext context) => [
-                        const PopupMenuItem<String>(
-                          value: 'remove',
-                          child: Text('Remove'),
-                        ),
-                      ],
-                      icon: const Icon(
-                        Icons.more_vert,
-                        color: Color(0xff392515),
-                        size: 20,
-                      ),
-                      offset: const Offset(0, 20), // Adjust menu position
+                    icon: const Icon(
+                      Icons.more_vert_rounded,
+                      color: Color(0xff392515),
+                      size: 25,
                     ),
+                    offset: const Offset(0, 20), // Adjust menu position
                   ),
-                  const SizedBox(height: 6),
+                ],
+              ),
+            ),
+
+            // Full-width divider
+
+            // Centered "add reminder" section
+            Padding(
+              padding: const EdgeInsets.only(left: 230,bottom: 10),
+              child: Row(
+                children: [
                   OutlinedButton.icon(
                     onPressed: () {
                       // Add plant to growingPlants if not already added
                       if (!growingPlants.contains(plant)) {
                         growingPlants.add(plant);
                       }
+                      // Show popup dialog
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            backgroundColor: const Color(0xFFEEF0E2),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 162,
-                                  height: 142,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    color: const Color(0xffeef0e2),
-                                  ),
-                                  child: Center(
-                                    child: Container(
-                                      width: 90, // Matching the size of the previous image
-                                      height: 90,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color:  Color(0xffc3824d), // Circle border color
-                                          width: 5.2, // Thickness of the circle
-                                        ),
-                                      ),
-                                      child: const Center(
-                                        child: Icon(
-                                          Icons.check,
-                                          color: Color(0xffc3824d), // Checkmark color
-                                          size: 70, // Adjust size of the checkmark
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                const Text(
-                                  'Add to Growing',
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xffc3824d),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
+                            backgroundColor: const Color(0xFFF4F5EC),
+                            title: const Text(
+                              'Success',
+                              style: TextStyle(
+                                color: Color(0xff392515),
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
+                            content: Text(
+                              '${plant.name} added to Growing!',
+                              style: const TextStyle(
+                                color: Color(0xff392515),
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(); // Close dialog
+                                  // Navigate to MyGarden with the plant and Growing tab
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/my_garden',
+                                    arguments: {
+                                      'plant': plant,
+                                      'tab': 'Growing'
+                                    },
+                                  );
+                                },
+                                child: const Text(
+                                  'OK',
+                                  style: TextStyle(
+                                    color: Color(0xff39ad4e),
+                                  ),
+                                ),
+                              ),
+                            ],
                           );
                         },
                       );
                     },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(
-                        color: Color(0xff609254),
+                        color: Color(0xff39ad4e),
                         width: 1,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
+                        horizontal: 18,
+                        vertical: 3,
                       ),
                     ),
                     icon: const Icon(
                       Icons.add,
-                      color: Color(0xff609254),
+                      color: Color(0xff39ad4e),
                       size: 16,
                     ),
                     label: const Text(
                       'Growing',
                       style: TextStyle(
-                        color: Color(0xff609254),
+                        color: Color(0xff39ad4e),
                         fontSize: 12,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
-
+      ),
+    );
   }
 }
