@@ -185,7 +185,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   cursorColor: const Color(0xFF609254),
                   controller: _locationController,
                   decoration: const InputDecoration(
-                    labelText: 'Location',
+                    labelText: 'Email',
                     labelStyle: TextStyle(color: Colors.grey),
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Color(0xFF609254)),
