@@ -10,6 +10,7 @@ import 'package:releaf/UI/Home/Category/categories_screen.dart';
 import 'package:releaf/UI/Home/Plants/PlantDetailScreen.dart';
 import 'package:releaf/UI/Home/Category/category_detail_screen.dart';
 import 'package:releaf/UI/Home/Plants/all_plants_screen.dart';
+import 'package:releaf/UI/Home/Plants/search_results_screen.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -138,11 +139,22 @@ class _HomeContentState extends State<HomeContent> {
   List<Plant> growingPlants =
       []; // Define growingPlants to fix undefined reference
 
+  // Add TextEditingController for search
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode(); // Add FocusNode
+
   @override
   void initState() {
     super.initState();
     _loadPlants();
     _loadCampaigns();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
   }
 
   Future<void> _loadPlants() async {
@@ -262,28 +274,34 @@ class _HomeContentState extends State<HomeContent> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: RefreshIndicator(
-        color: Color(0xFF609254),
-        backgroundColor: Color(0xFFF4F5EC),
-        onRefresh: _refreshHome,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSearchBar(),
-                const SizedBox(height: 16),
-                _buildTodaysCare(),
-                const SizedBox(height: 16),
-                _buildMapBanner(),
-                const SizedBox(height: 16),
-                _buildCategoryList(),
-                const SizedBox(height: 16),
-                _buildWhatToGrowSection(),
-                const SizedBox(height: 16),
-                _buildCommunitySection(context),
-              ],
+      child: GestureDetector(
+        onTap: () {
+          // Unfocus the search bar when tapping outside
+          _searchFocusNode.unfocus();
+        },
+        child: RefreshIndicator(
+          color: Color(0xFF609254),
+          backgroundColor: Color(0xFFF4F5EC),
+          onRefresh: _refreshHome,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSearchBar(),
+                  const SizedBox(height: 16),
+                  _buildTodaysCare(),
+                  const SizedBox(height: 16),
+                  _buildMapBanner(),
+                  const SizedBox(height: 16),
+                  _buildCategoryList(),
+                  const SizedBox(height: 16),
+                  _buildWhatToGrowSection(),
+                  const SizedBox(height: 16),
+                  _buildCommunitySection(context),
+                ],
+              ),
             ),
           ),
         ),
@@ -294,45 +312,73 @@ class _HomeContentState extends State<HomeContent> {
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 1),
-      child: Container(
-        height: 35,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFF609254)),
-          borderRadius: BorderRadius.circular(15),
+      child: TextSelectionTheme(
+        data: const TextSelectionThemeData(
+          cursorColor: Color(0xFF609254),
+          selectionColor: Color(0xFF609254),
+          selectionHandleColor: Color(0xFF609254),
         ),
-        child: Row(
-          children: [
-            Image.asset(
-              'assets/img_1.png',
-              width: 24,
-              height: 24,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(width: 5),
-            const Expanded(
-              child: TextField(
-                cursorColor: Color(0xFF609254),
-                style: TextStyle(
-                  color: Color(0xFF392515),
-                  fontSize: 11,
-                  fontFamily: 'Inter',
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Search plants...',
-                  hintStyle: TextStyle(
-                    color: Color(0xFF9F8571),
-                    fontSize: 11,
-                    fontFamily: 'Inter',
+        child: Container(
+          height: 37,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            border: Border.all(color: const Color(0xFF609254)),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Row(
+            children: [
+              Image.asset(
+                'assets/img_1.png',
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(width: 7),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: TextField(
+                    controller: _searchController,
+                    focusNode: _searchFocusNode,
+                    style: TextStyle(
+                      color: Color(0xFF392515),
+                      fontSize: 15,
+                      fontFamily: 'Inter',
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Search plants...',
+                      hintStyle: TextStyle(
+                        color: Color(0xFF9F8571),
+                        fontSize: 14,
+                        fontFamily: 'Inter',
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.only(bottom: 3),
+                      isCollapsed: true,
+                    ),
+                    onChanged: _onSearchChanged,
+                    onSubmitted: _onSearchSubmitted,
                   ),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.only(bottom: 3),
-                  isCollapsed: true,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  void _onSearchChanged(String query) {
+    // Optional: implement real-time filtering if desired
+  }
+
+  void _onSearchSubmitted(String query) {
+    if (query.trim().isEmpty) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SearchResultsScreen(searchQuery: query),
       ),
     );
   }
@@ -599,6 +645,7 @@ class _HomeContentState extends State<HomeContent> {
                     style: TextStyle(
                         fontSize: 19,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Laila',
                         color: Color(0xff392515)),
                   ),
                   const SizedBox(width: 6),
@@ -813,8 +860,8 @@ class _HomeContentState extends State<HomeContent> {
                   clipBehavior: Clip.antiAlias,
                   decoration: ShapeDecoration(
                     shape: RoundedRectangleBorder(
-                      side:
-                          const BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
+                      side: const BorderSide(
+                          width: 0.10, color: Color(0xFF4C2B12)),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(30),
                         topRight: Radius.circular(30),
@@ -834,7 +881,8 @@ class _HomeContentState extends State<HomeContent> {
                             image: plant.imageUrls.isNotEmpty
                                 ? CachedNetworkImageProvider(
                                     plant.imageUrls.first)
-                                : const AssetImage('assets/placeholder_plant.png')
+                                : const AssetImage(
+                                        'assets/placeholder_plant.png')
                                     as ImageProvider,
                             fit: BoxFit.cover,
                           ),
@@ -887,7 +935,8 @@ class _HomeContentState extends State<HomeContent> {
                                         Icons.check,
                                         color: Color(0xffc3824d),
                                         // Checkmark color
-                                        size: 70, // Adjust size of the checkmark
+                                        size:
+                                            70, // Adjust size of the checkmark
                                       ),
                                     ),
                                   ),
@@ -961,7 +1010,8 @@ class _HomeContentState extends State<HomeContent> {
                                       decoration: ShapeDecoration(
                                         color: const Color(0xFFEEF0E2),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(2),
+                                          borderRadius:
+                                              BorderRadius.circular(2),
                                         ),
                                       ),
                                     ),

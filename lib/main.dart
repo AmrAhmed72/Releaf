@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:releaf/SplashScreen.dart';
 import 'package:releaf/UI/signup/SignUpScreen.dart';
+import 'package:releaf/theme/app_theme.dart';
 
 void main() {
   runApp(const MyApp());
