@@ -9,7 +9,7 @@ import '../reminder/reminer_utils.dart';
 class GrowingCard extends StatelessWidget {
   final String plantName;
   final Plant plant;
-  final String growthStage;
+  final String Soil;
   final String imageUrl;
   final VoidCallback? onAddReminder;
 
@@ -17,7 +17,7 @@ class GrowingCard extends StatelessWidget {
     super.key,
     required this.plant,
     required this.plantName,
-    required this.growthStage,
+    required this.Soil,
     required this.imageUrl,
     this.onAddReminder,
   });
@@ -62,7 +62,7 @@ class GrowingCard extends StatelessWidget {
           children: [
             // Top content
             Padding(
-              padding: const EdgeInsets.only(left: 17, top: 21, bottom: 17),
+              padding: const EdgeInsets.only(left: 12, top: 21, bottom: 17),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -93,10 +93,10 @@ class GrowingCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 5),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 20, top: 18.5),
+                      padding: const EdgeInsets.only(left: 18, top: 18.5),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -108,20 +108,20 @@ class GrowingCard extends StatelessWidget {
                               color: Color(0xff4C2B12),
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 8),
                           Row(
                             children: [
                               Text(
-                                'Growth stage: ',
+                                'Soil:',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   color: Color(0xff4c2b12),
                                 ),
                               ),
                               Text(
-                                ' $growthStage',
+                                ' $Soil',
                                 style: const TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 11,
                                   color: Color(0xff22160d),
                                 ),
                               ),
@@ -172,7 +172,7 @@ class GrowingCard extends StatelessWidget {
                   }
                 },
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 140),
+                  padding: const EdgeInsets.only(left: 110),
                   child: Row(
                     children: const [
                       Icon(

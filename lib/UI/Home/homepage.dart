@@ -851,7 +851,7 @@ class _HomeContentState extends State<HomeContent> {
               top: 124,
               child: GestureDetector(
                 onTap: () {
-                  GrowingPlantsService().isPlantGrowing(plant);
+                  GrowingPlantsService().addPlant(plant);
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -1120,12 +1120,12 @@ class _HomeContentState extends State<HomeContent> {
             left: 15,
             top: 12,
             child: SizedBox(
-              width: 236,
+              width: 300,
               child: Text(
                 campaign.title,
                 style: const TextStyle(
                   color: Color(0xFFC3824D),
-                  fontSize: 14,
+                  fontSize: 18,
                   fontFamily: 'Laila',
                   height: 0,
                 ),

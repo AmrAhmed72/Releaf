@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../models/plant.dart';
+import '../../../services/growing_plants_service.dart';
 import '../grawing/grawing_plants.dart';
 
 class PlanCard extends StatelessWidget {
@@ -120,15 +121,13 @@ class PlanCard extends StatelessWidget {
 
             // Centered "add reminder" section
             Padding(
-              padding: const EdgeInsets.only(left: 230,bottom: 10),
+              padding: const EdgeInsets.only(left: 170,bottom: 10),
               child: Row(
                 children: [
                   OutlinedButton.icon(
                     onPressed: () {
                       // Add plant to growingPlants if not already added
-                      if (!growingPlants.contains(plant)) {
-                        growingPlants.add(plant);
-                      }
+                      GrowingPlantsService().addPlant(plant);
                       // Show popup dialog
                       showDialog(
                         context: context,

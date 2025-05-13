@@ -58,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen>
     // Navigate to Homepage after 2.5 seconds
     Timer(const Duration(milliseconds: 2500), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const SignUpScreen()),
+        MaterialPageRoute(builder: (context) => const Homepage()),
       );
     });
   }
