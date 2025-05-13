@@ -8,6 +8,10 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../../models/Map/AirQualityData.dart';
 import '../../models/Map/City.dart';
 import '../../models/Map/Country.dart';
+import '../../services/api_service.dart';
+import '../../models/plant.dart';
+import '../../models/category.dart';
+import './plant_suggestion_screen.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -15,6 +19,7 @@ class MapScreen extends StatefulWidget {
   @override
   State<MapScreen> createState() => _MapScreenState();
 }
+
 class _MapScreenState extends State<MapScreen> {
   final String apiKey = 'bd68ac0c-1024-4314-82ef-eb7bb5c9498e';
   List<Country> countries = [];
@@ -24,7 +29,10 @@ class _MapScreenState extends State<MapScreen> {
   AirQualityData? selectedCityData;
   LatLng? customMarkerLocation;
   bool isLoading = false;
+  bool fetchFailed = false;
   final MapController _mapController = MapController();
+  final ApiService _apiService = ApiService();
+  Function? _lastFetchAction;
 
   @override
   void initState() {
@@ -108,10 +116,20 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _fetchNearestCity(double lat, double lon) async {
+    setState(() {
+      isLoading = true;
+      fetchFailed = false;
+      selectedCityData = null;
+      _lastFetchAction = () => _fetchNearestCity(lat, lon);
+    });
+
     final url = Uri.parse(
         'http://api.airvisual.com/v2/nearest_city?lat=$lat&lon=$lon&key=$apiKey');
     try {
       final response = await http.get(url);
+      setState(() {
+        isLoading = false;
+      });
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['status'] == 'success') {
@@ -123,10 +141,38 @@ class _MapScreenState extends State<MapScreen> {
               country: cityData['country'],
             );
             selectedCityData = AirQualityData.fromJson(cityData);
+            fetchFailed = false;
+          });
+        } else {
+          setState(() {
+            selectedCity = City(
+              name: 'Unknown',
+              state: 'Unknown',
+              country: 'Unknown',
+            );
+            fetchFailed = true;
           });
         }
+      } else {
+        setState(() {
+          selectedCity = City(
+            name: 'Unknown',
+            state: 'Unknown',
+            country: 'Unknown',
+          );
+          fetchFailed = true;
+        });
       }
     } catch (e) {
+      setState(() {
+        isLoading = false;
+        selectedCity = City(
+          name: 'Unknown',
+          state: 'Unknown',
+          country: 'Unknown',
+        );
+        fetchFailed = true;
+      });
       print('Error fetching nearest city: $e');
     }
   }
@@ -136,23 +182,39 @@ class _MapScreenState extends State<MapScreen> {
       isLoading = true;
       selectedCity = city;
       selectedCityData = null;
+      fetchFailed = false;
+      _lastFetchAction = () => _fetchCityData(city);
     });
 
     final url = Uri.parse(
         'http://api.airvisual.com/v2/city?city=${city.name}&state=${city.state}&country=${city.country}&key=$apiKey');
     try {
       final response = await http.get(url);
+      setState(() {
+        isLoading = false;
+      });
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['status'] == 'success') {
           setState(() {
             selectedCityData = AirQualityData.fromJson(data['data']);
-            isLoading = false;
+            fetchFailed = false;
+          });
+        } else {
+          setState(() {
+            fetchFailed = true;
           });
         }
+      } else {
+        setState(() {
+          fetchFailed = true;
+        });
       }
     } catch (e) {
-      setState(() => isLoading = false);
+      setState(() {
+        isLoading = false;
+        fetchFailed = true;
+      });
       print('Error fetching city data: $e');
     }
   }
@@ -195,10 +257,88 @@ class _MapScreenState extends State<MapScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  Future<void> _suggestPlants() async {
+    if (selectedCityData == null) {
+      _showSnackbar('No air quality data available.');
+      return;
+    }
+
+    try {
+      final plants = await _apiService.getAllPlants();
+      final categories = await _apiService.getAllCategories();
+      final temperature = selectedCityData!.temperature;
+
+      final categoryMap = {
+        for (var category in categories) category.id: category.name.toLowerCase()
+      };
+
+      final trees = <Plant>[];
+      final flowers = <Plant>[];
+      final vegetables = <Plant>[];
+
+      for (var plant in plants) {
+        if (plant.temperature == 'Unknown' || plant.temperature.isEmpty) {
+          continue;
+        }
+
+        try {
+          String tempStr = plant.temperature.replaceAll('°C', '').trim();
+          bool matchesTemperature;
+
+          if (tempStr.contains('-')) {
+            final parts = tempStr.split('-').map((s) => s.trim()).toList();
+            if (parts.length != 2) continue;
+            final minTemp = double.tryParse(parts[0]);
+            final maxTemp = double.tryParse(parts[1]);
+            if (minTemp == null || maxTemp == null) continue;
+            matchesTemperature = temperature >= minTemp && temperature <= maxTemp;
+          } else {
+            final tempValue = double.tryParse(tempStr);
+            if (tempValue == null) continue;
+            matchesTemperature = temperature >= tempValue - 5 && temperature <= tempValue + 5;
+          }
+
+          if (matchesTemperature) {
+            final categoryName = categoryMap[plant.categoryId]?.toLowerCase() ?? 'unknown';
+            if (categoryName.contains('tree')) {
+              trees.add(plant);
+            } else if (categoryName.contains('flower')) {
+              flowers.add(plant);
+            } else if (categoryName.contains('vegetable') || categoryName.contains('veggie')) {
+              vegetables.add(plant);
+            }
+          }
+        } catch (e) {
+          print('Error parsing temperature for plant ${plant.name}: $e');
+          continue;
+        }
+      }
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PlantSuggestionScreen(
+            trees: trees,
+            flowers: flowers,
+            vegetables: vegetables,
+          ),
+        ),
+      );
+    } catch (e) {
+      print('Error fetching plants or categories: $e');
+      _showSnackbar('Error fetching plants: $e');
+    }
+  }
+
+  void _retryFetch() {
+    if (_lastFetchAction != null) {
+      _lastFetchAction!();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Stack(
         children: [
           FlutterMap(
@@ -228,9 +368,9 @@ class _MapScreenState extends State<MapScreen> {
           ),
           if (selectedCity != null)
             DraggableScrollableSheet(
-              initialChildSize: 0.6, // Match MyGarden
+              initialChildSize: 0.6,
               minChildSize: 0.3,
-              maxChildSize: 1,
+              maxChildSize: 0.6,
               builder: (BuildContext context, ScrollController scrollController) {
                 return ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
@@ -239,14 +379,14 @@ class _MapScreenState extends State<MapScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            'Air Quality Data',
+                            '${selectedCity!.name}, ${selectedCity!.state}, ${selectedCity!.country}',
                             style: const TextStyle(
-                              fontSize: 16,
-                              color: Color(0xff609254),
-                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff392515),
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -254,14 +394,6 @@ class _MapScreenState extends State<MapScreen> {
                             child: ListView(
                               controller: scrollController,
                               children: [
-                                Text(
-                                  '${selectedCity!.name}, ${selectedCity!.state}, ${selectedCity!.country}',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xff392515),
-                                  ),
-                                ),
                                 const SizedBox(height: 8),
                                 if (isLoading)
                                   const Center(
@@ -269,111 +401,175 @@ class _MapScreenState extends State<MapScreen> {
                                       color: Color(0xFF609254),
                                     ),
                                   )
-                                else if (selectedCityData != null)
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'AQI: ${selectedCityData!.aqi}',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          color: Color(0xff392515),
+                                else if (fetchFailed)
+                                  Center(
+                                    child: Column(
+                                      children: [
+                                        const Text(
+                                          'Failed to load city data. Please try again.',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.red,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'Temperature: ${selectedCityData!.temperature} °C',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          color: Color(0xff392515),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'Humidity: ${selectedCityData!.humidity}%',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          color: Color(0xff392515),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'Wind Speed: ${selectedCityData!.windSpeed} m/s',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          color: Color(0xff392515),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'Desertification Risk: ${selectedCityData!.desertificationIndex.toStringAsFixed(1)}%',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          color: Color(0xff392515),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 16),
-                                      SizedBox(
-                                        height: 160,
-                                        child: SfRadialGauge(
-                                          axes: <RadialAxis>[
-                                            RadialAxis(
-                                              minimum: 0,
-                                              maximum: 100,
-                                              ranges: <GaugeRange>[
-                                                GaugeRange(
-                                                  startValue: 0,
-                                                  endValue: 30,
-                                                  color: Colors.green,
-                                                ),
-                                                GaugeRange(
-                                                  startValue: 30,
-                                                  endValue: 60,
-                                                  color: Colors.yellow,
-                                                ),
-                                                GaugeRange(
-                                                  startValue: 60,
-                                                  endValue: 100,
-                                                  color: Colors.red,
-                                                ),
-                                              ],
-                                              pointers: <GaugePointer>[
-                                                NeedlePointer(
-                                                  value: selectedCityData!.desertificationIndex,
-                                                  enableAnimation: true,
-                                                ),
-                                              ],
-                                              annotations: <GaugeAnnotation>[
-                                                GaugeAnnotation(
-                                                  widget: Text(
-                                                    selectedCityData!.desertificationIndex < 30
-                                                        ? 'Good'
-                                                        : selectedCityData!.desertificationIndex <= 60
-                                                        ? 'Moderate'
-                                                        : 'High Risk',
-                                                    style: const TextStyle(
-                                                      fontSize: 13,
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  angle: 90,
-                                                  positionFactor: 0.5,
-                                                ),
-                                              ],
+                                        const SizedBox(height: 16),
+                                        ElevatedButton(
+                                          onPressed: _retryFetch,
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:  const Color(0xFF609254),
+                                            foregroundColor: Colors.white,
+                                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(25.0),
+                                              side: const BorderSide(color: Colors.grey, width: 1.0),
                                             ),
-                                          ],
+                                          ),
+                                          child: const Text(
+                                            'Try Again',
+                                            style: TextStyle(
+                                              color: Color(0xFFEEF0E2),
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  )
-                                else
-                                  const Text(
-                                    'Failed to load air quality data.',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.red,
+                                      ],
                                     ),
-                                  ),
+                                  )
+                                else if (selectedCityData != null)
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'AQI: ${selectedCityData!.aqi}',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xff392515),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'Temperature: ${selectedCityData!.temperature} °C',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xff392515),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'Humidity: ${selectedCityData!.humidity}%',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xFF392515),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'Wind Speed: ${selectedCityData!.windSpeed} m/s',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xFF392515),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'Desertification Risk: ${selectedCityData!.desertificationIndex.toStringAsFixed(1)}%',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xFF392515),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        SizedBox(
+                                          height: 160,
+                                          child: SfRadialGauge(
+                                            axes: <RadialAxis>[
+                                              RadialAxis(
+                                                minimum: 0,
+                                                maximum: 100,
+                                                ranges: <GaugeRange>[
+                                                  GaugeRange(
+                                                    startValue: 0,
+                                                    endValue: 30,
+                                                    color: Colors.green,
+                                                  ),
+                                                  GaugeRange(
+                                                    startValue: 30,
+                                                    endValue: 60,
+                                                    color: Colors.yellow,
+                                                  ),
+                                                  GaugeRange(
+                                                    startValue: 60,
+                                                    endValue: 100,
+                                                    color: Colors.red,
+                                                  ),
+                                                ],
+                                                pointers: <GaugePointer>[
+                                                  NeedlePointer(
+                                                    value: selectedCityData!.desertificationIndex,
+                                                    enableAnimation: true,
+                                                  ),
+                                                ],
+                                                annotations: <GaugeAnnotation>[
+                                                  GaugeAnnotation(
+                                                    widget: Padding(
+                                                      padding: const EdgeInsets.only(top: 50),
+                                                      child: Text(
+                                                        selectedCityData!.desertificationIndex < 30
+                                                            ? 'Good'
+                                                            : selectedCityData!.desertificationIndex <= 60
+                                                            ? 'Moderate'
+                                                            : 'High Risk',
+                                                        style: const TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    angle: 90,
+                                                    positionFactor: 0.5,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(bottom: 30),
+                                            child: ElevatedButton(
+                                              onPressed: _suggestPlants,
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:  const Color(0xFF609254),
+                                                foregroundColor: Colors.white,
+                                                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(25.0),
+                                                  side: const BorderSide(color: Colors.grey, width: 1.0),
+                                                ),
+                                              ),
+                                              child: const Text(
+                                                'Suggest a plant!',
+                                                style: TextStyle(
+                                                  color: Color(0xFFEEF0E2),
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  else
+                                    const Text(
+                                      'No data available.',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.red,
+                                      ),
+                                    ),
                               ],
                             ),
                           ),
@@ -394,8 +590,3 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 }
-
-
-
-
-

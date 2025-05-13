@@ -782,177 +782,161 @@ class _HomeContentState extends State<HomeContent> {
           ),
         );
       },
-      child: Container(
-        width: 165,
-        height: 158,
-        decoration: ShapeDecoration(
-          color: const Color(0xFFEEF0E2),
-          shape: RoundedRectangleBorder(
-            side: const BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
-            borderRadius: BorderRadius.circular(30),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 2),
+        child: Container(
+          width: 165,
+          height: 158,
+          decoration: ShapeDecoration(
+            color: const Color(0xFFEEF0E2),
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            shadows: const [
+              BoxShadow(
+                color: Color(0x3F4C2B12),
+                blurRadius: 4,
+                offset: Offset(0, 4),
+                spreadRadius: 0,
+              )
+            ],
           ),
-          shadows: const [
-            BoxShadow(
-              color: Color(0x3F4C2B12),
-              blurRadius: 4,
-              offset: Offset(0, 4),
-              spreadRadius: 0,
-            )
-          ],
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              left: 0,
-              top: 0,
-              child: Container(
-                width: 165,
-                height: 106,
-                clipBehavior: Clip.antiAlias,
-                decoration: ShapeDecoration(
-                  shape: RoundedRectangleBorder(
-                    side:
-                        const BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 163,
-                      height: 106,
-                      decoration: ShapeDecoration(
-                        image: DecorationImage(
-                          image: plant.imageUrls.isNotEmpty
-                              ? CachedNetworkImageProvider(
-                                  plant.imageUrls.first)
-                              : const AssetImage('assets/placeholder_plant.png')
-                                  as ImageProvider,
-                          fit: BoxFit.cover,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          side: const BorderSide(
-                              width: 0.10, color: Color(0xFF4C2B12)),
-                        ),
+          child: Stack(
+            children: [
+              Positioned(
+                left: 0,
+                top: 0,
+                child: Container(
+                  width: 165,
+                  height: 106,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: ShapeDecoration(
+                    shape: RoundedRectangleBorder(
+                      side:
+                          const BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              left: 133,
-              top: 124,
-              child: GestureDetector(
-                onTap: () {
-                  GrowingPlantsService().isPlantGrowing(plant);
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        backgroundColor: const Color(0xFFEEF0E2),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 162,
-                              height: 142,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                color: const Color(0xffeef0e2),
-                              ),
-                              child: Center(
-                                child: Container(
-                                  width: 90,
-                                  // Matching the size of the previous image
-                                  height: 90,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Color(0xffc3824d),
-                                      // Circle border color
-                                      width: 5.2, // Thickness of the circle
-                                    ),
-                                  ),
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.check,
-                                      color: Color(0xffc3824d),
-                                      // Checkmark color
-                                      size: 70, // Adjust size of the checkmark
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Add to Growing',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xffc3824d),
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ); // Add functionality for the "+" button
-                },
-                child: Container(
-                  width: 15,
-                  height: 15,
-                  child: Stack(
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        child: Container(
-                          width: 15,
-                          height: 15,
-                          decoration: const ShapeDecoration(
-                            color: Color(0xFF609254),
-                            shape: OvalBorder(),
+                      Container(
+                        width: 163,
+                        height: 106,
+                        decoration: ShapeDecoration(
+                          image: DecorationImage(
+                            image: plant.imageUrls.isNotEmpty
+                                ? CachedNetworkImageProvider(
+                                    plant.imageUrls.first)
+                                : const AssetImage('assets/placeholder_plant.png')
+                                    as ImageProvider,
+                            fit: BoxFit.cover,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            side: const BorderSide(
+                                width: 0.10, color: Color(0xFF4C2B12)),
                           ),
                         ),
                       ),
-                      Positioned(
-                        left: 3,
-                        top: 3,
-                        child: Container(
-                          width: 9,
-                          height: 9,
-                          child: Stack(
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 133,
+                top: 124,
+                child: GestureDetector(
+                  onTap: () {
+                    GrowingPlantsService().addPlant(plant);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          backgroundColor: const Color(0xFFEEF0E2),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Positioned(
-                                left: 3.75,
-                                top: 0,
-                                child: Container(
-                                  width: 1.50,
-                                  height: 9,
-                                  decoration: ShapeDecoration(
-                                    color: const Color(0xFFEEF0E2),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(2),
+                              Container(
+                                width: 162,
+                                height: 142,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: const Color(0xffeef0e2),
+                                ),
+                                child: Center(
+                                  child: Container(
+                                    width: 90,
+                                    // Matching the size of the previous image
+                                    height: 90,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Color(0xffc3824d),
+                                        // Circle border color
+                                        width: 5.2, // Thickness of the circle
+                                      ),
+                                    ),
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.check,
+                                        color: Color(0xffc3824d),
+                                        // Checkmark color
+                                        size: 70, // Adjust size of the checkmark
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                              Positioned(
-                                left: 9,
-                                top: 3.75,
-                                child: Transform(
-                                  transform: Matrix4.identity()
-                                    ..translate(0.0, 0.0)
-                                    ..rotateZ(1.57),
+                              const SizedBox(height: 12),
+                              const Text(
+                                'Add to Growing',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xffc3824d),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ); // Add functionality for the "+" button
+                  },
+                  child: Container(
+                    width: 15,
+                    height: 15,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          left: 0,
+                          top: 0,
+                          child: Container(
+                            width: 15,
+                            height: 15,
+                            decoration: const ShapeDecoration(
+                              color: Color(0xFF609254),
+                              shape: OvalBorder(),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: 3,
+                          top: 3,
+                          child: Container(
+                            width: 9,
+                            height: 9,
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  left: 3.75,
+                                  top: 0,
                                   child: Container(
                                     width: 1.50,
                                     height: 9,
@@ -964,30 +948,49 @@ class _HomeContentState extends State<HomeContent> {
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                                Positioned(
+                                  left: 9,
+                                  top: 3.75,
+                                  child: Transform(
+                                    transform: Matrix4.identity()
+                                      ..translate(0.0, 0.0)
+                                      ..rotateZ(1.57),
+                                    child: Container(
+                                      width: 1.50,
+                                      height: 9,
+                                      decoration: ShapeDecoration(
+                                        color: const Color(0xFFEEF0E2),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(2),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              left: 15.50,
-              top: 117,
-              child: Text(
-                plant.name,
-                style: const TextStyle(
-                  color: Color(0xFF609254),
-                  fontSize: 18,
-                  fontFamily: 'Laila',
-                  height: 0,
+              Positioned(
+                left: 15.50,
+                top: 117,
+                child: Text(
+                  plant.name,
+                  style: const TextStyle(
+                    color: Color(0xFF609254),
+                    fontSize: 18,
+                    fontFamily: 'Laila',
+                    height: 0,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

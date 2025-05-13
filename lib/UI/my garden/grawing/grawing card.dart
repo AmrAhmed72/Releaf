@@ -9,7 +9,7 @@ import '../reminder/reminer_utils.dart';
 class GrowingCard extends StatelessWidget {
   final String plantName;
   final Plant plant;
-  final String growthStage;
+  final String soil;
   final String imageUrl;
   final VoidCallback? onAddReminder;
 
@@ -17,7 +17,7 @@ class GrowingCard extends StatelessWidget {
     super.key,
     required this.plant,
     required this.plantName,
-    required this.growthStage,
+    required this.soil,
     required this.imageUrl,
     this.onAddReminder,
   });
@@ -112,14 +112,14 @@ class GrowingCard extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                'Growth stage: ',
+                                'soil: ',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   color: Color(0xff4c2b12),
                                 ),
                               ),
                               Text(
-                                ' $growthStage',
+                                ' $soil',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   color: Color(0xff22160d),
@@ -172,7 +172,7 @@ class GrowingCard extends StatelessWidget {
                   }
                 },
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 140),
+                  padding: const EdgeInsets.only(left: 135),
                   child: Row(
                     children: const [
                       Icon(

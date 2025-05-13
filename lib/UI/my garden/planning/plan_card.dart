@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../models/plant.dart';
+import '../../../services/growing_plants_service.dart';
 import '../grawing/grawing_plants.dart';
 
 class PlanCard extends StatelessWidget {
@@ -120,56 +121,62 @@ class PlanCard extends StatelessWidget {
 
             // Centered "add reminder" section
             Padding(
-              padding: const EdgeInsets.only(left: 230,bottom: 10),
+              padding: const EdgeInsets.only(left: 200,bottom: 10),
               child: Row(
                 children: [
                   OutlinedButton.icon(
                     onPressed: () {
                       // Add plant to growingPlants if not already added
-                      if (!growingPlants.contains(plant)) {
-                        growingPlants.add(plant);
-                      }
+                      GrowingPlantsService().addPlant(plant);
                       // Show popup dialog
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            backgroundColor: const Color(0xFFF4F5EC),
-                            title: const Text(
-                              'Success',
-                              style: TextStyle(
-                                color: Color(0xff392515),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            content: Text(
-                              '${plant.name} added to Growing!',
-                              style: const TextStyle(
-                                color: Color(0xff392515),
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop(); // Close dialog
-                                  // Navigate to MyGarden with the plant and Growing tab
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/my_garden',
-                                    arguments: {
-                                      'plant': plant,
-                                      'tab': 'Growing'
-                                    },
-                                  );
-                                },
-                                child: const Text(
-                                  'OK',
-                                  style: TextStyle(
-                                    color: Color(0xff39ad4e),
+                            backgroundColor: const Color(0xFFEEF0E2),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 162,
+                                  height: 142,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: const Color(0xffeef0e2),
+                                  ),
+                                  child: Center(
+                                    child: Container(
+                                      width: 90,
+                                      height: 90,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Color(0xffc3824d),
+                                          width: 5.2,
+                                        ),
+                                      ),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.check,
+                                          color: Color(0xffc3824d),
+                                          size: 70,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 12),
+                                const Text(
+                                  'Add to Growing',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xffc3824d),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           );
                         },
                       );

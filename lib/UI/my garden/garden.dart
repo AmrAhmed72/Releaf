@@ -141,7 +141,7 @@ class _MyGardenState extends State<MyGarden> {
                 GrowingCard(
                   plantName: plant.name,
                   plant: plant,
-                  growthStage: 'Vegetative',
+                  soil: plant.soil,
                   imageUrl: plant.imageUrls.isNotEmpty ? plant.imageUrls.first : '',
                 ),
                 const SizedBox(height: 16),
@@ -205,110 +205,112 @@ class _MyGardenState extends State<MyGarden> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            "assets/Rectangle 52.png",
-            fit: BoxFit.cover,
-          ),
-          DraggableScrollableSheet(
-            initialChildSize: 0.7,
-            minChildSize: 0.7,
-            maxChildSize: 1,
-            builder: (context, controller) => ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-              child: Container(
-                color: const Color(0xfff4f5ec),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedCategory = "Planning";
-                              });
-                            },
-                            child: Text(
-                              "Planning",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: _selectedCategory == "Planning"
-                                    ? const Color(0xff609254)
-                                    : const Color(0xff392515),
-                                fontWeight: _selectedCategory == "Planning"
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
+    return SafeArea(
+      child: Scaffold(
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              "assets/Rectangle 52.png",
+              fit: BoxFit.cover,
+            ),
+            DraggableScrollableSheet(
+              initialChildSize: 0.7,
+              minChildSize: 0.7,
+              maxChildSize: 1,
+              builder: (context, controller) => ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+                child: Container(
+                  color: const Color(0xfff4f5ec),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedCategory = "Planning";
+                                });
+                              },
+                              child: Text(
+                                "Planning",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: _selectedCategory == "Planning"
+                                      ? const Color(0xff609254)
+                                      : const Color(0xff392515),
+                                  fontWeight: _selectedCategory == "Planning"
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                ),
                               ),
                             ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedCategory = "Growing";
-                              });
-                            },
-                            child: Text(
-                              "Growing",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: _selectedCategory == "Growing"
-                                    ? const Color(0xff609254)
-                                    : const Color(0xff392515),
-                                fontWeight: _selectedCategory == "Growing"
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedCategory = "Growing";
+                                });
+                              },
+                              child: Text(
+                                "Growing",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: _selectedCategory == "Growing"
+                                      ? const Color(0xff609254)
+                                      : const Color(0xff392515),
+                                  fontWeight: _selectedCategory == "Growing"
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                ),
                               ),
                             ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedCategory = "Reminders";
-                              });
-                            },
-                            child: Text(
-                              "Reminders",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: _selectedCategory == "Reminders"
-                                    ? const Color(0xff609254)
-                                    : const Color(0xff392515),
-                                fontWeight: _selectedCategory == "Reminders"
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedCategory = "Reminders";
+                                });
+                              },
+                              child: Text(
+                                "Reminders",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: _selectedCategory == "Reminders"
+                                      ? const Color(0xff609254)
+                                      : const Color(0xff392515),
+                                  fontWeight: _selectedCategory == "Reminders"
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Expanded(
-                        child: _buildContent(controller),
-                      ),
-                    ],
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Expanded(
+                          child: _buildContent(controller),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            print("Add button pressed");
+          },
+          backgroundColor: const Color(0xff609254),
+          child: const Icon(
+            Icons.add,
+            color: Color(0xffeef0e2),
+            size: 30,
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          print("Add button pressed");
-        },
-        backgroundColor: const Color(0xff609254),
-        child: const Icon(
-          Icons.add,
-          color: Color(0xffeef0e2),
-          size: 30,
         ),
       ),
     );
