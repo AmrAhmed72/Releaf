@@ -25,6 +25,7 @@ import 'package:releaf/data/categories.dart';
 import 'package:releaf/services/api_service.dart';
 import 'package:releaf/services/campaign_cache_service.dart';
 import 'package:releaf/services/plant_cache_service.dart';
+import '../../Widgets/loaders/rotating_logo_loader.dart';
 import '../../services/growing_plants_service.dart';
 import '../my garden/grawing/grawing_plants.dart';
 
@@ -761,9 +762,13 @@ class _HomeContentState extends State<HomeContent> {
             future: _plantsFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(
-                    color: Color(0xFF609254),
+                return const  Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: RotatingLogoLoader(
+                      logoAssetPath: 'assets/logo.png',
+                      size: 50,
+                    ),
                   ),
                 );
               } else if (snapshot.hasError) {
@@ -1098,8 +1103,12 @@ class _HomeContentState extends State<HomeContent> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
-                  child: CircularProgressIndicator(
-                    color: Color(0xFF609254),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: RotatingLogoLoader(
+                      logoAssetPath: 'assets/logo.png',
+                      size: 50,
+                    ),
                   ),
                 );
               } else if (snapshot.hasError) {

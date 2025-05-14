@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../Widgets/loaders/rotating_logo_loader.dart';
 import '../../../models/plant.dart';
 import '../../../services/api_service.dart';
 import '../../../services/plant_cache_service.dart';
@@ -90,8 +91,12 @@ class _AllPlantsScreenState extends State<AllPlantsScreen> {
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xFF609254),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: RotatingLogoLoader(
+                    logoAssetPath: 'assets/logo.png',
+                    size: 50,
+                  ),
                 ),
               );
             } else if (snapshot.hasError) {

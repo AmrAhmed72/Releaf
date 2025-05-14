@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../Widgets/loaders/rotating_logo_loader.dart';
 import '../../../models/plant.dart';
 import '../../../services/growing_plants_service.dart';
 import '../../my garden/planning/planned_plants.dart';
@@ -50,8 +51,12 @@ class PlantDetailScreen extends StatelessWidget {
                 imageUrl: plant.imageUrls.first,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => const Center(
-                  child: CircularProgressIndicator(
-                    color: Color(0xFF609254),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: RotatingLogoLoader(
+                      logoAssetPath: 'assets/logo.png',
+                      size: 50,
+                    ),
                   ),
                 ),
                 errorWidget: (context, url, error) => const Center(
