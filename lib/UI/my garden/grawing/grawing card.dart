@@ -5,21 +5,22 @@ import '../../../models/plant.dart';
 import '../reminder/reminder.dart';
 import '../reminder/reminer_utils.dart';
 
-
 class GrowingCard extends StatelessWidget {
   final String plantName;
   final Plant plant;
-  final String Soil;
+  final String soil;
   final String imageUrl;
   final VoidCallback? onAddReminder;
+  final VoidCallback? onRemove; // New callback for remove action
 
   const GrowingCard({
     super.key,
     required this.plant,
     required this.plantName,
-    required this.Soil,
+    required this.soil,
     required this.imageUrl,
     this.onAddReminder,
+    this.onRemove, // Added to constructor
   });
 
   void _showAddReminderDialog(BuildContext context) {
@@ -111,15 +112,15 @@ class GrowingCard extends StatelessWidget {
                           const SizedBox(height: 8),
                           Row(
                             children: [
-                              Text(
+                              const Text(
                                 'Soil:',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
                                   color: Color(0xff4c2b12),
                                 ),
                               ),
                               Text(
-                                ' $Soil',
+                                ' $soil',
                                 style: const TextStyle(
                                   fontSize: 11,
                                   color: Color(0xff22160d),
@@ -133,7 +134,9 @@ class GrowingCard extends StatelessWidget {
                   ),
                   PopupMenuButton<String>(
                     onSelected: (value) {
-                      if (value == 'remove') {}
+                      if (value == 'remove') {
+                        onRemove?.call(); // Call the remove callback
+                      }
                     },
                     itemBuilder: (BuildContext context) => [
                       const PopupMenuItem<String>(
@@ -146,19 +149,17 @@ class GrowingCard extends StatelessWidget {
                       color: Color(0xff39ad4e),
                       size: 20,
                     ),
-                    offset: const Offset(0, 20), // Adjust menu position
+                    offset: const Offset(0, 20),
                   ),
                 ],
               ),
             ),
-
             // Full-width divider
             const Divider(
               color: Color(0xff4c2b12),
               thickness: 0.5,
               height: 0,
             ),
-
             // Centered "add reminder" section
             Container(
               width: double.infinity,
@@ -171,14 +172,14 @@ class GrowingCard extends StatelessWidget {
                     _showAddReminderDialog(context);
                   }
                 },
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 110),
+                child: const Padding(
+                  padding: EdgeInsets.only(left: 110),
                   child: Row(
-                    children: const [
+                    children: [
                       Icon(
                         Icons.alarm_add,
                         size: 14,
-                        color: Color(0xff39ad4e), // light green
+                        color: Color(0xff39ad4e),
                       ),
                       SizedBox(width: 4),
                       Text(
