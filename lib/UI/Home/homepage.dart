@@ -27,7 +27,7 @@ import 'package:releaf/services/campaign_cache_service.dart';
 import 'package:releaf/services/plant_cache_service.dart';
 import '../../Widgets/loaders/rotating_logo_loader.dart';
 import '../../services/growing_plants_service.dart';
-import '../my garden/grawing/grawing_plants.dart';
+
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -130,15 +130,15 @@ class _HomeContentState extends State<HomeContent> {
   final CampaignCacheService _campaignCacheService = CampaignCacheService();
   final PlantCacheService _plantCacheService = PlantCacheService();
   Future<List<Plant>> _plantsFuture =
-      Future.value([]); // Initialize with empty list
+  Future.value([]); // Initialize with empty list
   Future<List<Campaign>> _campaignsFuture =
-      Future.value([]); // Initialize with empty list
+  Future.value([]); // Initialize with empty list
   String _selectedFilterType = 'Season';
   String _selectedSeason = 'Summer';
   String _selectedSoil = 'Loamy';
   String _selectedSunlight = 'Full Sun';
   List<Plant> growingPlants =
-      []; // Define growingPlants to fix undefined reference
+  []; // Define growingPlants to fix undefined reference
 
   // Add TextEditingController for search
   final TextEditingController _searchController = TextEditingController();
@@ -246,11 +246,11 @@ class _HomeContentState extends State<HomeContent> {
       });
       _campaignsFuture =
           _apiService.getAllCampaigns().then((freshCampaigns) async {
-        if (freshCampaigns.isNotEmpty) {
-          await _campaignCacheService.cacheCampaigns(freshCampaigns);
-        }
-        return freshCampaigns;
-      });
+            if (freshCampaigns.isNotEmpty) {
+              await _campaignCacheService.cacheCampaigns(freshCampaigns);
+            }
+            return freshCampaigns;
+          });
     });
   }
 
@@ -329,9 +329,9 @@ class _HomeContentState extends State<HomeContent> {
           child: Row(
             children: [
               Image.asset(
-                'assets/img_1.png',
-                width: 24,
-                height: 24,
+                'assets/output-onlinepngtools.png',
+                width: 26,
+                height: 26,
                 fit: BoxFit.contain,
               ),
               const SizedBox(width: 7),
@@ -479,7 +479,7 @@ class _HomeContentState extends State<HomeContent> {
                 children: [
                   TileLayer(
                     urlTemplate:
-                        'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+                    'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
                     subdomains: ['a', 'b', 'c'],
                   ),
                 ],
@@ -885,10 +885,10 @@ class _HomeContentState extends State<HomeContent> {
                           image: DecorationImage(
                             image: plant.imageUrls.isNotEmpty
                                 ? CachedNetworkImageProvider(
-                                    plant.imageUrls.first)
+                                plant.imageUrls.first)
                                 : const AssetImage(
-                                        'assets/placeholder_plant.png')
-                                    as ImageProvider,
+                                'assets/placeholder_plant.png')
+                            as ImageProvider,
                             fit: BoxFit.cover,
                           ),
                           shape: RoundedRectangleBorder(
@@ -941,7 +941,7 @@ class _HomeContentState extends State<HomeContent> {
                                         color: Color(0xffc3824d),
                                         // Checkmark color
                                         size:
-                                            70, // Adjust size of the checkmark
+                                        70, // Adjust size of the checkmark
                                       ),
                                     ),
                                   ),
@@ -1016,7 +1016,7 @@ class _HomeContentState extends State<HomeContent> {
                                         color: const Color(0xFFEEF0E2),
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
-                                              BorderRadius.circular(2),
+                                          BorderRadius.circular(2),
                                         ),
                                       ),
                                     ),

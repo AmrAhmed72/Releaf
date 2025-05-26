@@ -2,21 +2,33 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 class ResultScreen extends StatelessWidget {
-  final String flowerInfoPrimary;
-  final String flowerInfoSecondary;
+  final List<String>? results; // For identification results (indices 0-5)
+  final String? flowerInfoPrimary; // For diagnosis results
+  final String? flowerInfoSecondary; // For diagnosis results
   final String imagePath;
   final bool isDiagnosis;
 
   const ResultScreen({
     super.key,
-    required this.flowerInfoPrimary,
-    required this.flowerInfoSecondary,
+    this.results,
+    this.flowerInfoPrimary,
+    this.flowerInfoSecondary,
     required this.imagePath,
     this.isDiagnosis = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Define labels for identification results
+    const List<String> labels = [
+      'Flower Name:',
+      'Scientific Name:',
+      'Genus:',
+      'Fun Fact:',
+      'Where Found:',
+      'Description:',
+    ];
+
     return Scaffold(
       backgroundColor: const Color(0xffeef0e2),
       appBar: AppBar(
@@ -53,37 +65,73 @@ class ResultScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Text(
-              isDiagnosis ? "Disease Name:" : "Identification Name:",
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: const Color(0xFF609254),
-                fontWeight: FontWeight.bold,
+            if (isDiagnosis) ...[
+              Text(
+                'Disease Name:',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: const Color(0xFF609254),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              flowerInfoPrimary,
-              style: const TextStyle(
-                fontSize: 19,
-                color: Colors.black87,
+              const SizedBox(height: 10),
+              Text(
+                flowerInfoPrimary ?? 'Unknown',
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 15,
+                  color: Color(0xFF4C2B12),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              "Description:",
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: const Color(0xFF609254),
-                fontWeight: FontWeight.bold,
+              const SizedBox(height: 20),
+              Text(
+                'Description:',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: const Color(0xFF609254),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              flowerInfoSecondary,
-              style: const TextStyle(
-                fontSize: 17,
-                color: Colors.black87,
+              const SizedBox(height: 10),
+              Text(
+                flowerInfoSecondary ?? 'No description available',
+                style: const TextStyle(
+                  fontSize: 17,
+                  color: Colors.black87,
+                ),
               ),
-            ),
+            ] else ...[
+              // Display identification results with specific labels
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: List.generate(
+                  results?.length ?? 0,
+                      (index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          labels[index],
+                          style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: const Color(0xFF609254),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          results![index],
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 18,
+                            color: Color(0xFF4C2B12),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),

@@ -74,7 +74,7 @@ class _CameraScreenState extends State<CameraScreen> {
     print("Photos button tapped");
     try {
       final XFile? pickedFile =
-          await _picker.pickImage(source: ImageSource.gallery);
+      await _picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         setState(() {
           _imagePath = pickedFile.path;
@@ -107,23 +107,21 @@ class _CameraScreenState extends State<CameraScreen> {
 
     try {
       var result = await IdentifyApi.identifyFlower(_imagePath!);
-      var flowerInfoPrimary = result['primary'];
-      var flowerInfoSecondary = result['secondary'];
-      print("Primary identification: $flowerInfoPrimary");
-      print("Secondary identification: $flowerInfoSecondary");
+      var flowerResults = result['results'] as List<String>;
+      print("Identification results: $flowerResults");
       Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => ResultScreen(
-            flowerInfoPrimary: flowerInfoPrimary,
-            flowerInfoSecondary: flowerInfoSecondary,
+            results: flowerResults,
             imagePath: _imagePath!,
           ),
         ),
       );
     } catch (e) {
       print("Error identifying flower: $e");
+      Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error identifying flower: $e")),
       );
@@ -149,7 +147,7 @@ class _CameraScreenState extends State<CameraScreen> {
       var diseaseDescription = result['secondary'];
       print("Disease: $diseaseName");
       print("Description: $diseaseDescription");
-      Navigator.pop(context); // Close loading dialog
+      Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -162,7 +160,7 @@ class _CameraScreenState extends State<CameraScreen> {
         ),
       );
     } catch (e) {
-      Navigator.pop(context); // Close loading dialog
+      Navigator.pop(context);
       print("Error diagnosing plant: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error diagnosing plant: $e")),
@@ -179,33 +177,33 @@ class _CameraScreenState extends State<CameraScreen> {
           children: [
             _imagePath == null
                 ? FutureBuilder<void>(
-                    future: _initializeControllerFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        return SizedBox.expand(
-                          child: FittedBox(
-                            fit: BoxFit.cover,
-                            child: SizedBox(
-                              width: _controller!.value.previewSize!.height,
-                              height: _controller!.value.previewSize!.width,
-                              child: CameraPreview(_controller!),
-                            ),
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        return const Center(
-                            child: Text("Error initializing camera"));
-                      } else {
-                        return const Center(child: CircularProgressIndicator(color: Color(0xFF609254)));
-                      }
-                    },
-                  )
-                : Positioned.fill(
-                    child: Image.file(
-                      File(_imagePath!),
+              future: _initializeControllerFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return SizedBox.expand(
+                    child: FittedBox(
                       fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: _controller!.value.previewSize!.height,
+                        height: _controller!.value.previewSize!.width,
+                        child: CameraPreview(_controller!),
+                      ),
                     ),
-                  ),
+                  );
+                } else if (snapshot.hasError) {
+                  return const Center(
+                      child: Text("Error initializing camera"));
+                } else {
+                  return const Center(child: CircularProgressIndicator(color: Color(0xFF609254)));
+                }
+              },
+            )
+                : Positioned.fill(
+              child: Image.file(
+                File(_imagePath!),
+                fit: BoxFit.cover,
+              ),
+            ),
             if (_imagePath == null)
               Center(
                 child: CustomDashedBorder(
@@ -253,7 +251,7 @@ class _CameraScreenState extends State<CameraScreen> {
               right: 0,
               child: Container(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 color: const Color(0xFF609254),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
