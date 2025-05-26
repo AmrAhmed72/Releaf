@@ -7,7 +7,7 @@ import '../../models/plant.dart';
 import 'grawing/grawing card.dart';
 import 'grawing/grawing_plants.dart';
 import 'planning/plan_card.dart';
-
+import '../../services/growing_plants_service.dart'; // Added import
 
 class MyGarden extends StatefulWidget {
   const MyGarden({super.key});
@@ -42,8 +42,9 @@ class _MyGardenState extends State<MyGarden> {
           setState(() {
             if (tab == 'Planning' && !plannedPlants.contains(plant)) {
               plannedPlants.add(plant);
-            } else if (tab == 'Growing' && !growingPlants.contains(plant)) {
-              growingPlants.add(plant);
+            } else if (tab == 'Growing' &&
+                !GrowingPlantsService().isPlantGrowing(plant)) {
+              GrowingPlantsService().addPlant(plant);
             }
             _selectedCategory = tab;
           });
@@ -127,6 +128,7 @@ class _MyGardenState extends State<MyGarden> {
           },
         );
       case "Growing":
+        final growingPlants = GrowingPlantsService().growingPlants;
         return growingPlants.isEmpty
             ? const Center(child: Text('No plants growing yet'))
             : ListView.builder(
@@ -141,8 +143,14 @@ class _MyGardenState extends State<MyGarden> {
                 GrowingCard(
                   plantName: plant.name,
                   plant: plant,
-                  Soil: plant.soil,
-                  imageUrl: plant.imageUrls.isNotEmpty ? plant.imageUrls.first : '',
+                  soil: plant.soil,
+                  imageUrl:
+                  plant.imageUrls.isNotEmpty ? plant.imageUrls.first : '',
+                  onRemove: () {
+                    setState(() {
+                      GrowingPlantsService().removePlant(plant);
+                    });
+                  },
                 ),
                 const SizedBox(height: 16),
               ],
@@ -151,7 +159,15 @@ class _MyGardenState extends State<MyGarden> {
         );
       case "Reminders":
         final filteredReminders = reminders.where((reminder) {
-          final dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(_selectedDay);
+          final dayIndex = [
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
+            'Sunday'
+          ].indexOf(_selectedDay);
           return reminder.repeatDays[dayIndex];
         }).toList();
         return Column(
@@ -189,8 +205,11 @@ class _MyGardenState extends State<MyGarden> {
                   return ReminderCard(
                     title: reminder.type == 'water' ? 'Water' : 'Fertilize',
                     plantName: reminder.plant.name,
-                    description: '${reminder.plant.name} is to be ${reminder.type == 'water' ? 'watered' : 'fertilized'} at ${reminder.dateTime.hour.toString().padLeft(2, '0')}:${reminder.dateTime.minute.toString().padLeft(2, '0')} on ${reminder.dateTime.day}/${reminder.dateTime.month}/${reminder.dateTime.year}',
-                    icon: reminder.type == 'water' ? Icons.water_drop : Icons.local_florist,
+                    description:
+                    '${reminder.plant.name} is to be ${reminder.type == 'water' ? 'watered' : 'fertilized'} at ${reminder.dateTime.hour.toString().padLeft(2, '0')}:${reminder.dateTime.minute.toString().padLeft(2, '0')} on ${reminder.dateTime.day}/${reminder.dateTime.month}/${reminder.dateTime.year}',
+                    icon: reminder.type == 'water'
+                        ? Icons.water_drop
+                        : Icons.local_florist,
                     onCheck: () => _deleteReminder(reminders.indexOf(reminder)),
                   );
                 },
@@ -219,7 +238,8 @@ class _MyGardenState extends State<MyGarden> {
               minChildSize: 0.7,
               maxChildSize: 1,
               builder: (context, controller) => ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+                borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(30)),
                 child: Container(
                   color: const Color(0xfff4f5ec),
                   child: Padding(

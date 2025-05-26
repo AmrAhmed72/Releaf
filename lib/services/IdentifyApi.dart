@@ -8,7 +8,7 @@ class IdentifyApi {
       // Create a multipart request to send the image to the flower identification API
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('https://flower-identification-80t9.onrender.com/predictFlower'),
+        Uri.parse('https://flower-identification-mija.onrender.com/predictFlower100edit'),
       );
 
       // Add the image file to the request with the key 'image'
@@ -26,7 +26,7 @@ class IdentifyApi {
         var flowerInfoPrimary = result['result'][0]; // Primary identification
         var flowerInfoSecondary = result['result'].length > 1
             ? result['result'][1]
-            : "No secondary identification available"; // Secondary identification or fallback message
+            : "No more data available"; // Secondary identification or// fallback message
 
         return {
           'primary': flowerInfoPrimary,
@@ -46,7 +46,7 @@ class IdentifyApi {
       // Create a multipart request to send the image to the disease prediction API
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('https://flower-identification-80t9.onrender.com/predictDisease'),
+        Uri.parse('https://flower-identification-mija.onrender.com/predictDisease'),
       );
 
       // Add the image file to the request with the key 'image'

@@ -12,7 +12,8 @@ class CommunityPage extends StatefulWidget {
 }
 
 class _CommunityPageState extends State<CommunityPage> {
-  Future<List<Campaign>> _campaignsFuture = Future.value([]); // Initialize with empty list
+  Future<List<Campaign>> _campaignsFuture = Future.value(
+      []); // Initialize with empty list
   final ApiService _apiService = ApiService();
   final CampaignCacheService _campaignCacheService = CampaignCacheService();
 
@@ -71,7 +72,8 @@ class _CommunityPageState extends State<CommunityPage> {
           backgroundColor: const Color(0xFF609254),
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFFF4F5EC)),
+            icon: const Icon(
+                Icons.arrow_back_ios_new, color: Color(0xFFF4F5EC)),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -106,11 +108,14 @@ class _CommunityPageState extends State<CommunityPage> {
                   future: _campaignsFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator(color: Color(0xFF609254)));
+                      return const Center(
+                          child: CircularProgressIndicator(color: Color(
+                              0xFF609254)));
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text('No campaigns available'));
+                      return const Center(child: Text(
+                          'No campaigns available'));
                     }
 
                     final campaigns = snapshot.data!;
@@ -218,15 +223,16 @@ class _CommunityPageState extends State<CommunityPage> {
                 Icon(
                   Icons.wb_sunny,
                   color: Colors.orange,
-                  size: 80,
+                  size: 65,
                 ),
-                const SizedBox(height: 60),
-                Icon(
-                  FontAwesomeIcons.treeCity,
-                  color: Colors.green,
-                  size: 80,
+                const SizedBox(height: 85),
+                Image.asset(
+                  'assets/communitetree.png',
+
+                  height: 100,
+
                 ),
-                const SizedBox(height: 16),
+                
               ],
             ),
           ],

@@ -27,7 +27,6 @@ import 'package:releaf/services/campaign_cache_service.dart';
 import 'package:releaf/services/plant_cache_service.dart';
 import '../../Widgets/loaders/rotating_logo_loader.dart';
 import '../../services/growing_plants_service.dart';
-import '../my garden/grawing/grawing_plants.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -71,10 +70,9 @@ class _HomepageState extends State<Homepage> {
       const Icon(Icons.camera_alt, size: 30, color: Color(0xff22160d)),
       // Index 2: Camera
       Image.asset(
-        'assets/gardenIcon.png',
-        width: 24,
-        height: 24,
-        fit: BoxFit.contain,
+        'assets/potted-plant.png',
+        width: 30,
+        height: 27,
       ),
       // Index 3: Favorites
       const Icon(Icons.person, size: 30, color: Color(0xff22160d)),
@@ -1059,7 +1057,7 @@ class _HomeContentState extends State<HomeContent> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              "Community",
+              "Camapaign",
               style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
