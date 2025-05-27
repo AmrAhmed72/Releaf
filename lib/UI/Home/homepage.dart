@@ -1059,7 +1059,7 @@ class _HomeContentState extends State<HomeContent> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              "Community",
+              "Camapaign",
               style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
