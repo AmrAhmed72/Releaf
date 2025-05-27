@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
+import '../../Widgets/ScanningAnimation.dart';
 import '../../services/IdentifyApi.dart';
 import 'ResultScreen.dart';
 import 'snap_tips_dialog.dart';
@@ -101,8 +102,16 @@ class _CameraScreenState extends State<CameraScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
-          child: CircularProgressIndicator(color: Color(0xFF609254))),
+      barrierColor:Colors.black,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: SizedBox(
+          width: 300,
+          height: 400,
+          child: ScanningAnimation(imagePath: _imagePath!),
+        ),
+      ),
+
     );
 
     try {
@@ -138,7 +147,15 @@ class _CameraScreenState extends State<CameraScreen> {
       barrierLabel: "Wait A Second,Please!",
       context: context,
       barrierDismissible: true,
-      builder: (context) => const Center(child: CircularProgressIndicator(color: Color(0xFF609254))),
+      barrierColor:Colors.black,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: SizedBox(
+          width: 300,
+          height: 400,
+          child: ScanningAnimation(imagePath: _imagePath!),
+        ),
+      ),
     );
     try {
       var result = await IdentifyApi.predictDisease(_imagePath!);
