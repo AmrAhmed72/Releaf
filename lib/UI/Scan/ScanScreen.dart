@@ -4,11 +4,9 @@ import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
-import '../../Widgets/ScanningAnimation.dart';
 import '../../services/IdentifyApi.dart';
 import 'ResultScreen.dart';
 import 'snap_tips_dialog.dart';
-
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -103,37 +101,27 @@ class _CameraScreenState extends State<CameraScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      barrierColor:Color(0xFFF4F5EC), // Solid black barrier
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: SizedBox(
-          width: 300,
-          height: 400,
-          child: ScanningAnimation(imagePath: _imagePath!),
-        ),
-      ),
+      builder: (context) => const Center(
+          child: CircularProgressIndicator(color: Color(0xFF609254))),
     );
 
     try {
       var result = await IdentifyApi.identifyFlower(_imagePath!);
-      var flowerInfoPrimary = result['primary'];
-      var flowerInfoSecondary = result['secondary'];
-      print("Primary identification: $flowerInfoPrimary");
-      print("Secondary identification: $flowerInfoSecondary");
-      Navigator.pop(context); // Close the scanning dialog
+      var flowerResults = result['results'] as List<String>;
+      print("Identification results: $flowerResults");
+      Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => ResultScreen(
-            flowerInfoPrimary: flowerInfoPrimary,
-            flowerInfoSecondary: flowerInfoSecondary,
+            results: flowerResults,
             imagePath: _imagePath!,
           ),
         ),
       );
     } catch (e) {
-      Navigator.pop(context); // Close the scanning dialog
       print("Error identifying flower: $e");
+      Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error identifying flower: $e")),
       );
@@ -147,17 +135,10 @@ class _CameraScreenState extends State<CameraScreen> {
     }
     print("Diagnosing image: $_imagePath");
     showDialog(
+      barrierLabel: "Wait A Second,Please!",
       context: context,
-      barrierDismissible: false,
-      barrierColor: Colors.black, // Solid black barrier
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: SizedBox(
-          width: 300,
-          height: 400,
-          child: ScanningAnimation(imagePath: _imagePath!),
-        ),
-      ),
+      barrierDismissible: true,
+      builder: (context) => const Center(child: CircularProgressIndicator(color: Color(0xFF609254))),
     );
     try {
       var result = await IdentifyApi.predictDisease(_imagePath!);
@@ -166,7 +147,7 @@ class _CameraScreenState extends State<CameraScreen> {
       var diseaseDescription = result['secondary'];
       print("Disease: $diseaseName");
       print("Description: $diseaseDescription");
-      Navigator.pop(context); // Close the scanning dialog
+      Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -179,7 +160,7 @@ class _CameraScreenState extends State<CameraScreen> {
         ),
       );
     } catch (e) {
-      Navigator.pop(context); // Close the scanning dialog
+      Navigator.pop(context);
       print("Error diagnosing plant: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error diagnosing plant: $e")),
@@ -213,10 +194,7 @@ class _CameraScreenState extends State<CameraScreen> {
                   return const Center(
                       child: Text("Error initializing camera"));
                 } else {
-                  return const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.green,
-                      ));
+                  return const Center(child: CircularProgressIndicator(color: Color(0xFF609254)));
                 }
               },
             )
