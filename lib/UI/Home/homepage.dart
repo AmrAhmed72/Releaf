@@ -71,7 +71,7 @@ class _HomepageState extends State<Homepage> {
       const Icon(Icons.camera_alt, size: 30, color: Color(0xff22160d)),
       // Index 2: Camera
       Image.asset(
-        'assets/gardenIcon.png',
+        'assets/potted-plant.png',
         width: 24,
         height: 24,
         fit: BoxFit.contain,
@@ -1059,7 +1059,7 @@ class _HomeContentState extends State<HomeContent> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              "Community",
+              "Camapaign",
               style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
