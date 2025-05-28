@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../Widgets/custom_alert_dialog.dart';
 import '../../../Widgets/loaders/rotating_logo_loader.dart';
 import '../../../models/plant.dart';
 import '../../../services/growing_plants_service.dart';
@@ -209,51 +210,9 @@ class PlantDetailScreen extends StatelessWidget {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return AlertDialog(
-                              backgroundColor: const Color(0xFFEEF0E2),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    width: 162,
-                                    height: 142,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      color: const Color(0xffeef0e2),
-                                    ),
-                                    child: Center(
-                                      child: Container(
-                                        width: 90,
-                                        height: 90,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: Color(0xffc3824d),
-                                            width: 5.2,
-                                          ),
-                                        ),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.check,
-                                            color: Color(0xffc3824d),
-                                            size: 70,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  const Text(
-                                    'Add to planning',
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xffc3824d),
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
+                            return const CustomAlertDialog(
+                              title: 'Add to planning',
+                              icon: Icons.check,
                             );
                           },
                         );
@@ -287,51 +246,9 @@ class PlantDetailScreen extends StatelessWidget {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return AlertDialog(
-                              backgroundColor: const Color(0xFFEEF0E2),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    width: 162,
-                                    height: 142,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      color: const Color(0xffeef0e2),
-                                    ),
-                                    child: Center(
-                                      child: Container(
-                                        width: 90,
-                                        height: 90,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: Color(0xffc3824d),
-                                            width: 5.2,
-                                          ),
-                                        ),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.info,
-                                            color: Color(0xffc3824d),
-                                            size: 70,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  const Text(
-                                    'Already Growing',
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xffc3824d),
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
+                            return const CustomAlertDialog(
+                              title: 'Already Growing',
+                              icon: Icons.info,
                             );
                           },
                         );
@@ -341,51 +258,9 @@ class PlantDetailScreen extends StatelessWidget {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return AlertDialog(
-                              backgroundColor: const Color(0xFFEEF0E2),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    width: 162,
-                                    height: 142,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      color: const Color(0xffeef0e2),
-                                    ),
-                                    child: Center(
-                                      child: Container(
-                                        width: 90,
-                                        height: 90,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: Color(0xffc3824d),
-                                            width: 5.2,
-                                          ),
-                                        ),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.check,
-                                            color: Color(0xffc3824d),
-                                            size: 70,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  const Text(
-                                    'Add to Growing',
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xffc3824d),
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
+                            return const CustomAlertDialog(
+                              title: 'Add to Growing',
+                              icon: Icons.check,
                             );
                           },
                         );

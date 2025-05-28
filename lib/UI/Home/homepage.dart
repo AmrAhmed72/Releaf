@@ -64,20 +64,20 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     final items = <Widget>[
-      const Icon(Icons.home, size: 30, color: Color(0xff22160d)),
+      const Icon(Icons.home, size: 31, color: Color(0xff22160d)),
       // Index 0: Home
-      const Icon(Icons.location_on, size: 30, color: Color(0xff22160d)),
+      const Icon(Icons.location_on, size: 31, color: Color(0xff22160d)),
       // Index 1: Locations
-      const Icon(Icons.camera_alt, size: 30, color: Color(0xff22160d)),
+      const Icon(Icons.camera_alt, size: 31, color: Color(0xff22160d)),
       // Index 2: Camera
       Image.asset(
         'assets/potted-plant.png',
-        width: 24,
-        height: 24,
+        width: 29,
+        height: 27,
         fit: BoxFit.contain,
       ),
       // Index 3: Favorites
-      const Icon(Icons.person, size: 30, color: Color(0xff22160d)),
+      const Icon(Icons.person, size: 31, color: Color(0xff22160d)),
       // Index 4: Profile
     ];
 
