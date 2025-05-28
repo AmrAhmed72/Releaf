@@ -816,6 +816,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  scanning_effect:
+    dependency: "direct main"
+    description:
+      name: scanning_effect
+      sha256: c196bdbdace5c7f4262c4ed6deae51b17bb17c6f9983ab042e109044e499cc83
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.8"
   shared_preferences:
     dependency: "direct main"
     description:

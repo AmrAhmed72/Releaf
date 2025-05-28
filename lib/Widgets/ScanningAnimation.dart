@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:scanning_effect/scanning_effect.dart';
 
 class ScanningAnimation extends StatefulWidget {
   final String imagePath;
@@ -12,25 +13,30 @@ class ScanningAnimation extends StatefulWidget {
 
 class _ScanningAnimationState extends State<ScanningAnimation>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
+  late AnimationController _textAnimationController;
+  late Animation<double> _textAnimation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 2),
+    // Initialize the animation controller for the text
+    _textAnimationController = AnimationController(
+      duration: const Duration(seconds: 1), // Duration of one fade cycle
       vsync: this,
-    )..repeat(reverse: true);
+    )..repeat(reverse: true); // Repeat the animation, reversing direction
 
-    _animation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.linear),
+    // Define the opacity animation (0.0 = fully transparent, 1.0 = fully opaque)
+    _textAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _textAnimationController,
+        curve: Curves.easeInOut,
+      ),
     );
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _textAnimationController.dispose();
     super.dispose();
   }
 
@@ -39,7 +45,7 @@ class _ScanningAnimationState extends State<ScanningAnimation>
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(
-        color: Color(0xFFF4F5EC), // Solid black background
+        color: const Color(0xFFF4F5EC),
         child: Stack(
           children: [
             // Display the image being scanned
@@ -49,36 +55,42 @@ class _ScanningAnimationState extends State<ScanningAnimation>
                 fit: BoxFit.cover,
               ),
             ),
-            // Scanning bar
-            AnimatedBuilder(
-              animation: _animation,
-              builder: (context, child) {
-                return Stack(
-                  children: [
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      top: _animation.value * 400, // Adjusted for dialog height
-                      child: Container(
-                        height: 4,
-                        color: Colors.green.withOpacity(0.7),
-                        child: const Center(),
-                      ),
-                    ),
-                    // Scanning text
-                    const Center(
-                      child: Text(
-                        "Scanning...",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
+            // Scanning effect with shadow
+            Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 0),
+                  ),
+                ],
+              ),
+              child: ScanningEffect(
+                scanningColor: Colors.green,
+                borderLineColor: Colors.green,
+                delay: const Duration(seconds: 0),
+                duration: const Duration(seconds: 2),
+                scanningHeightOffset: 0.7,
+                scanningLinePadding: EdgeInsets.all(0),
+                enableBorder: false,
+                child: const SizedBox(),
+              ),
+            ),
+            // Animated "Scanning..." text
+            Center(
+              child: FadeTransition(
+                opacity: _textAnimation,
+                child: const Text(
+                  "Scanning...",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
           ],
         ),

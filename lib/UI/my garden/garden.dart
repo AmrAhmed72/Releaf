@@ -321,17 +321,6 @@ class _MyGardenState extends State<MyGarden> {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            print("Add button pressed");
-          },
-          backgroundColor: const Color(0xff609254),
-          child: const Icon(
-            Icons.add,
-            color: Color(0xffeef0e2),
-            size: 30,
-          ),
-        ),
       ),
     );
   }

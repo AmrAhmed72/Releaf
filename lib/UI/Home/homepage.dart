@@ -64,20 +64,19 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     final items = <Widget>[
-      const Icon(Icons.home, size: 31, color: Color(0xff22160d)),
+      const Icon(Icons.home, size: 30, color: Color(0xff22160d)),
       // Index 0: Home
-      const Icon(Icons.location_on, size: 31, color: Color(0xff22160d)),
+      const Icon(Icons.location_on, size: 30, color: Color(0xff22160d)),
       // Index 1: Locations
-      const Icon(Icons.camera_alt, size: 31, color: Color(0xff22160d)),
+      const Icon(Icons.camera_alt, size: 30, color: Color(0xff22160d)),
       // Index 2: Camera
       Image.asset(
         'assets/potted-plant.png',
-        width: 29,
-        height: 27,
-        fit: BoxFit.contain,
+        height: 29,
+        fit: BoxFit.cover,
       ),
       // Index 3: Favorites
-      const Icon(Icons.person, size: 31, color: Color(0xff22160d)),
+      const Icon(Icons.person, size: 30, color: Color(0xff22160d)),
       // Index 4: Profile
     ];
 
@@ -330,11 +329,11 @@ class _HomeContentState extends State<HomeContent> {
             children: [
               Image.asset(
                 'assets/output-onlinepngtools.png',
-                width: 26,
-                height: 26,
+                width: 24,
+                height: 24,
                 fit: BoxFit.contain,
               ),
-              const SizedBox(width: 7),
+              const SizedBox(width: 3),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 4.0),
