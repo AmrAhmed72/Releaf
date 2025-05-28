@@ -72,9 +72,8 @@ class _HomepageState extends State<Homepage> {
       // Index 2: Camera
       Image.asset(
         'assets/potted-plant.png',
-        width: 24,
-        height: 24,
-        fit: BoxFit.contain,
+        height: 29,
+        fit: BoxFit.cover,
       ),
       // Index 3: Favorites
       const Icon(Icons.person, size: 30, color: Color(0xff22160d)),

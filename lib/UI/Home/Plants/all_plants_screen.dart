@@ -68,7 +68,7 @@ class _AllPlantsScreenState extends State<AllPlantsScreen> {
       backgroundColor: Color(0xFFF4F5EC),
       onRefresh: _refreshPlants,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFFEEF0E2),
         appBar:  AppBar(
           backgroundColor: const Color(0xFF609254),
           elevation: 0,
@@ -126,7 +126,7 @@ class _AllPlantsScreenState extends State<AllPlantsScreen> {
                 return Container(
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: Color(0xFFEEF0E2),
+                    color: Color(0xFFFFFFFF),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(

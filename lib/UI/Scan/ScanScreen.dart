@@ -101,8 +101,8 @@ class _CameraScreenState extends State<CameraScreen> {
     print("Identifying image: $_imagePath");
     showDialog(
       context: context,
-      barrierDismissible: false,
-      barrierColor:Colors.black,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.9),
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         child: SizedBox(
@@ -147,7 +147,7 @@ class _CameraScreenState extends State<CameraScreen> {
       barrierLabel: "Wait A Second,Please!",
       context: context,
       barrierDismissible: true,
-      barrierColor:Colors.black,
+      barrierColor:Colors.black.withOpacity(0.9),
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         child: SizedBox(

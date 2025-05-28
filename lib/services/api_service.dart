@@ -108,7 +108,7 @@ class ApiService {
       throw Exception('Error parsing campaign data: $e');
     } catch (e) {
       print('Detailed error while fetching campaigns: $e');
-      throw Exception('Network error while fetching campaigns: $e');
+      throw Exception('Network error while fetching campaigns');
     }
   }
 
@@ -228,7 +228,7 @@ class ApiService {
       }
     } catch (e) {
       print('Error in getAllPlants: $e');
-      throw Exception('Error fetching plants: $e');
+      throw Exception('Error fetching plants: ');
     }
   }
 }

@@ -409,7 +409,7 @@ class _MapScreenState extends State<MapScreen> {
                                           'Failed to load city data. Please try again.',
                                           style: TextStyle(
                                             fontSize: 16,
-                                            color: Colors.red,
+                                            color: Color(0xFFE31207),
                                           ),
                                         ),
                                         const SizedBox(height: 16),
