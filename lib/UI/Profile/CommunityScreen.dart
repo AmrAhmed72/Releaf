@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:releaf/services/api_service.dart';
+import 'package:releaf/services/Api/api_service.dart';
 import 'package:releaf/models/campaign.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:releaf/services/campaign_cache_service.dart';
+import 'package:releaf/services/Cashe/campaign_cache_service.dart';
 
 class CommunityPage extends StatefulWidget {
   const CommunityPage({super.key});

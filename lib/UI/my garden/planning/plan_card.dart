@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../models/plant.dart';
-import '../../../services/growing_plants_service.dart';
+import '../grawing/growing_plants_service.dart';
 import '../grawing/grawing_plants.dart';
 
 class PlanCard extends StatelessWidget {

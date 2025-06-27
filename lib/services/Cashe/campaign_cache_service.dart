@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/campaign.dart';
+import '../../models/campaign.dart';
 
 class CampaignCacheService {
   static const String _campaignsKey = 'cached_campaigns';

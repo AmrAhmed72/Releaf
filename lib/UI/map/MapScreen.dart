@@ -8,7 +8,7 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../../models/Map/AirQualityData.dart';
 import '../../models/Map/City.dart';
 import '../../models/Map/Country.dart';
-import '../../services/api_service.dart';
+import '../../services/Api/api_service.dart';
 import '../../models/plant.dart';
 import '../../models/category.dart';
 import './plant_suggestion_screen.dart';

@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
 import '../../Widgets/ScanningAnimation.dart';
-import '../../services/IdentifyApi.dart';
+import '../../services/Api/IdentifyApi.dart';
 import 'ResultScreen.dart';
 import 'snap_tips_dialog.dart';
 

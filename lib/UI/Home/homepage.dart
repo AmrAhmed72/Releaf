@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:releaf/UI/Home/Search/search_screen.dart';
 import 'package:releaf/UI/Profile/ProfileScreen.dart';
 import 'package:releaf/UI/my garden/garden.dart';
 import 'package:releaf/UI/Profile/CommunityScreen.dart';
@@ -10,24 +11,18 @@ import 'package:releaf/UI/Home/Category/categories_screen.dart';
 import 'package:releaf/UI/Home/Plants/PlantDetailScreen.dart';
 import 'package:releaf/UI/Home/Category/category_detail_screen.dart';
 import 'package:releaf/UI/Home/Plants/all_plants_screen.dart';
-import 'package:releaf/UI/Home/Plants/search_results_screen.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-// Import models
 import 'package:releaf/models/category.dart';
 import 'package:releaf/models/campaign.dart';
 import 'package:releaf/models/plant.dart';
-
-// Import data
 import 'package:releaf/data/categories.dart';
-import 'package:releaf/services/api_service.dart';
-import 'package:releaf/services/campaign_cache_service.dart';
-import 'package:releaf/services/plant_cache_service.dart';
-import '../../Widgets/loaders/rotating_logo_loader.dart';
-import '../../services/growing_plants_service.dart';
-
+import 'package:releaf/services/Api/api_service.dart';
+import 'package:releaf/services/Cashe/campaign_cache_service.dart';
+import 'package:releaf/services/Cashe/plant_cache_service.dart';
+import 'package:releaf/Widgets/loaders/rotating_logo_loader.dart';
+import 'package:releaf/UI/my%20garden/grawing/growing_plants_service.dart';
+import '../../data/Shared_Prefs/Shared_Prefs.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -37,27 +32,25 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  int _index = 0; // Start at the Home tab (index 0)
+  int _index = 0;
 
-  // List of screens to navigate to
   late final List<Widget> _screens;
 
   @override
   void initState() {
     super.initState();
-    // Initialize _screens with the callback for map banner
     _screens = [
       HomeContent(
         onMapBannerTapped: () {
           setState(() {
-            _index = 1; // Switch to MapScreen
+            _index = 1;
           });
         },
       ),
-      const MapScreen(), // Locations screen (index 1)
+      const MapScreen(),
       const Placeholder(),
-      const MyGarden(), // Favorites screen (index 3)
-      ProfileScreen(), // Profile screen (index 4)
+      const MyGarden(),
+      ProfileScreen(),
     ];
   }
 
@@ -65,24 +58,19 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     final items = <Widget>[
       const Icon(Icons.home, size: 30, color: Color(0xff22160d)),
-      // Index 0: Home
       const Icon(Icons.location_on, size: 30, color: Color(0xff22160d)),
-      // Index 1: Locations
       const Icon(Icons.camera_alt, size: 30, color: Color(0xff22160d)),
-      // Index 2: Camera
       Image.asset(
         'assets/potted-plant.png',
         height: 29,
         fit: BoxFit.cover,
       ),
-      // Index 3: Favorites
       const Icon(Icons.person, size: 30, color: Color(0xff22160d)),
-      // Index 4: Profile
     ];
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F5EC),
-      body: _screens[_index], // Display the selected screen based on the index
+      body: _screens[_index],
       bottomNavigationBar: CurvedNavigationBar(
         color: const Color(0xFF609254),
         backgroundColor: Colors.transparent,
@@ -91,18 +79,15 @@ class _HomepageState extends State<Homepage> {
         items: items,
         onTap: (index) {
           if (index == 2) {
-            // When the camera tab is tapped, navigate to CameraScreen
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const CameraScreen()),
             ).then((_) {
-              // After returning from CameraScreen, reset the index to 0 (Home)
               setState(() {
                 _index = 0;
               });
             });
           } else {
-            // For other tabs, update the index as usual
             setState(() {
               _index = index;
             });
@@ -113,9 +98,8 @@ class _HomepageState extends State<Homepage> {
   }
 }
 
-// Separate widget for the Home content
 class HomeContent extends StatefulWidget {
-  final VoidCallback onMapBannerTapped; // Callback for map banner tap
+  final VoidCallback onMapBannerTapped;
 
   const HomeContent({super.key, required this.onMapBannerTapped});
 
@@ -128,26 +112,26 @@ class _HomeContentState extends State<HomeContent> {
   final ApiService _apiService = ApiService();
   final CampaignCacheService _campaignCacheService = CampaignCacheService();
   final PlantCacheService _plantCacheService = PlantCacheService();
-  Future<List<Plant>> _plantsFuture =
-  Future.value([]); // Initialize with empty list
-  Future<List<Campaign>> _campaignsFuture =
-  Future.value([]); // Initialize with empty list
-  String _selectedFilterType = 'Season';
-  String _selectedSeason = 'Summer';
-  String _selectedSoil = 'Loamy';
-  String _selectedSunlight = 'Full Sun';
-  List<Plant> growingPlants =
-  []; // Define growingPlants to fix undefined reference
-
-  // Add TextEditingController for search
+  Future<List<Plant>> _plantsFuture = Future.value([]);
+  Future<List<Campaign>> _campaignsFuture = Future.value([]);
+  List<Plant> growingPlants = [];
   final TextEditingController _searchController = TextEditingController();
-  final FocusNode _searchFocusNode = FocusNode(); // Add FocusNode
+  final FocusNode _searchFocusNode = FocusNode();
+  List<String> _recentSearches = [];
 
   @override
   void initState() {
     super.initState();
     _loadPlants();
     _loadCampaigns();
+    _loadRecentSearches();
+  }
+
+  Future<void> _loadRecentSearches() async {
+    final searches = await SharedPrefs.loadRecentSearches();
+    setState(() {
+      _recentSearches = searches;
+    });
   }
 
   @override
@@ -159,20 +143,17 @@ class _HomeContentState extends State<HomeContent> {
 
   Future<void> _loadPlants() async {
     try {
-      // First try to get cached data
       final cachedPlants = await _plantCacheService.getCachedPlants();
       if (cachedPlants != null && cachedPlants.isNotEmpty) {
         setState(() {
           _plantsFuture = Future.value(cachedPlants);
         });
       } else {
-        // If no cached data, fetch from API
         setState(() {
           _plantsFuture = _apiService.getAllPlants();
         });
       }
 
-      // Try to fetch fresh data in the background
       try {
         final freshPlants = await _apiService.getAllPlants();
         if (freshPlants.isNotEmpty) {
@@ -185,11 +166,9 @@ class _HomeContentState extends State<HomeContent> {
         }
       } catch (e) {
         print('Error fetching fresh plants: $e');
-        // Continue using cached data
       }
     } catch (e) {
       print('Error loading plants: $e');
-      // If all else fails, fetch from API
       setState(() {
         _plantsFuture = _apiService.getAllPlants();
       });
@@ -198,20 +177,17 @@ class _HomeContentState extends State<HomeContent> {
 
   Future<void> _loadCampaigns() async {
     try {
-      // First try to get cached data
       final cachedCampaigns = await _campaignCacheService.getCachedCampaigns();
       if (cachedCampaigns != null && cachedCampaigns.isNotEmpty) {
         setState(() {
           _campaignsFuture = Future.value(cachedCampaigns);
         });
       } else {
-        // If no cached data, fetch from API
         setState(() {
           _campaignsFuture = _apiService.getAllCampaigns();
         });
       }
 
-      // Try to fetch fresh data in the background
       try {
         final freshCampaigns = await _apiService.getAllCampaigns();
         if (freshCampaigns.isNotEmpty) {
@@ -224,11 +200,9 @@ class _HomeContentState extends State<HomeContent> {
         }
       } catch (e) {
         print('Error fetching fresh campaigns: $e');
-        // Continue using cached data
       }
     } catch (e) {
       print('Error loading campaigns: $e');
-      // If all else fails, fetch from API
       setState(() {
         _campaignsFuture = _apiService.getAllCampaigns();
       });
@@ -243,32 +217,13 @@ class _HomeContentState extends State<HomeContent> {
         }
         return freshPlants;
       });
-      _campaignsFuture =
-          _apiService.getAllCampaigns().then((freshCampaigns) async {
-            if (freshCampaigns.isNotEmpty) {
-              await _campaignCacheService.cacheCampaigns(freshCampaigns);
-            }
-            return freshCampaigns;
-          });
+      _campaignsFuture = _apiService.getAllCampaigns().then((freshCampaigns) async {
+        if (freshCampaigns.isNotEmpty) {
+          await _campaignCacheService.cacheCampaigns(freshCampaigns);
+        }
+        return freshCampaigns;
+      });
     });
-  }
-
-  List<Plant> _filterPlants(List<Plant> plants) {
-    return plants.where((plant) {
-      if (_selectedFilterType == 'Season') {
-        // Handle complex season values (e.g., "Spring to Summer" includes "Spring" or "Summer")
-        return plant.season
-            .toLowerCase()
-            .contains(_selectedSeason.toLowerCase());
-      } else if (_selectedFilterType == 'Soil') {
-        return plant.soil.toLowerCase().contains(_selectedSoil.toLowerCase());
-      } else if (_selectedFilterType == 'Sunlight') {
-        return plant.sunlight
-            .toLowerCase()
-            .contains(_selectedSunlight.toLowerCase());
-      }
-      return true; // Default: no filter
-    }).toList();
   }
 
   @override
@@ -276,12 +231,11 @@ class _HomeContentState extends State<HomeContent> {
     return SafeArea(
       child: GestureDetector(
         onTap: () {
-          // Unfocus the search bar when tapping outside
           _searchFocusNode.unfocus();
         },
         child: RefreshIndicator(
-          color: Color(0xFF609254),
-          backgroundColor: Color(0xFFF4F5EC),
+          color: const Color(0xFF609254),
+          backgroundColor: const Color(0xFFF4F5EC),
           onRefresh: _refreshHome,
           child: SingleChildScrollView(
             child: Padding(
@@ -310,75 +264,73 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 1),
-      child: TextSelectionTheme(
-        data: const TextSelectionThemeData(
-          cursorColor: Color(0xFF609254),
-          selectionColor: Color(0xFF609254),
-          selectionHandleColor: Color(0xFF609254),
-        ),
-        child: Container(
-          height: 37,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF609254)),
-            borderRadius: BorderRadius.circular(15),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SearchScreen(
+              recentSearches: _recentSearches,
+              onSearchSubmitted: (query) async {
+                setState(() {
+                  if (!_recentSearches.contains(query) && query.trim().isNotEmpty) {
+                    _recentSearches.insert(0, query);
+                    if (_recentSearches.length > 6) _recentSearches.removeLast();
+                    SharedPrefs.saveRecentSearches(_recentSearches);
+                  }
+                });
+              },
+              onClearRecent: () async {
+                setState(() {
+                  _recentSearches.clear();
+                  SharedPrefs.clearRecentSearches();
+                });
+              },
+            ),
           ),
-          child: Row(
-            children: [
-              Image.asset(
-                'assets/output-onlinepngtools.png',
-                width: 24,
-                height: 24,
-                fit: BoxFit.contain,
-              ),
-              const SizedBox(width: 3),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 4.0),
-                  child: TextField(
-                    controller: _searchController,
-                    focusNode: _searchFocusNode,
-                    style: TextStyle(
-                      color: Color(0xFF392515),
-                      fontSize: 15,
-                      fontFamily: 'Inter',
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Search plants...',
-                      hintStyle: TextStyle(
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 1),
+        child: TextSelectionTheme(
+          data: const TextSelectionThemeData(
+            cursorColor: Color(0xFF609254),
+            selectionColor: Color(0xFF609254),
+            selectionHandleColor: Color(0xFF609254),
+          ),
+          child: Container(
+            height: 37,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xFF609254)),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Row(
+              children: [
+                Image.asset(
+                  'assets/output-onlinepngtools.png',
+                  width: 24,
+                  height: 24,
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(width: 3),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 2.0),
+                    child: Text(
+                      'Search plants...',
+                      style: TextStyle(
                         color: Color(0xFF9F8571),
                         fontSize: 14,
                         fontFamily: 'Inter',
                       ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.only(bottom: 3),
-                      isCollapsed: true,
                     ),
-                    onChanged: _onSearchChanged,
-                    onSubmitted: _onSearchSubmitted,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
-
-  void _onSearchChanged(String query) {
-    // Optional: implement real-time filtering if desired
-  }
-
-  void _onSearchSubmitted(String query) {
-    if (query.trim().isEmpty) return;
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SearchResultsScreen(searchQuery: query),
       ),
     );
   }
@@ -459,7 +411,6 @@ class _HomeContentState extends State<HomeContent> {
   Widget _buildMapBanner() {
     return GestureDetector(
       onTap: widget.onMapBannerTapped,
-      // Call the callback to switch to MapScreen
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: Container(
@@ -477,8 +428,7 @@ class _HomeContentState extends State<HomeContent> {
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate:
-                    'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+                    urlTemplate: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
                     subdomains: ['a', 'b', 'c'],
                   ),
                 ],
@@ -633,126 +583,48 @@ class _HomeContentState extends State<HomeContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "What to grow",
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Laila',
+                color: Color(0xff392515),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AllPlantsScreen(),
+                  ),
+                );
+              },
+              child: Row(
                 children: [
                   const Text(
-                    "What to grow in",
+                    "View All",
                     style: TextStyle(
-                        fontSize: 19,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Laila',
-                        color: Color(0xff392515)),
+                      color: Color(0xFF609254),
+                      fontSize: 14,
+                      fontFamily: 'Laila',
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                  const SizedBox(width: 6),
-                  // Filter Type Dropdown
-                  DropdownButton<String>(
-                    value: _selectedFilterType,
-                    items: ['Season', 'Soil', 'Sunlight'].map((filterType) {
-                      return DropdownMenuItem(
-                        value: filterType,
-                        child: Text(filterType),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _selectedFilterType = value;
-                        });
-                      }
-                    },
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_forward,
+                    color: const Color(0xFF609254),
+                    size: 16,
                   ),
-                  // Dynamic Filter Value Dropdown
-                  if (_selectedFilterType == 'Season')
-                    DropdownButton<String>(
-                      value: _selectedSeason,
-                      items: ['Summer', 'Winter', 'Spring', 'All Year']
-                          .map((season) {
-                        return DropdownMenuItem(
-                          value: season,
-                          child: Text(season),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _selectedSeason = value;
-                          });
-                        }
-                      },
-                    ),
-                  if (_selectedFilterType == 'Soil')
-                    DropdownButton<String>(
-                      value: _selectedSoil,
-                      items: ['Loamy', 'Sandy', 'Well-drained', 'Moist']
-                          .map((soil) {
-                        return DropdownMenuItem(
-                          value: soil,
-                          child: Text(soil),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _selectedSoil = value;
-                          });
-                        }
-                      },
-                    ),
-                  if (_selectedFilterType == 'Sunlight')
-                    DropdownButton<String>(
-                      value: _selectedSunlight,
-                      items: ['Full Sun', 'Partial Sun'].map((sunlight) {
-                        return DropdownMenuItem(
-                          value: sunlight,
-                          child: Text(sunlight),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _selectedSunlight = value;
-                          });
-                        }
-                      },
-                    ),
                 ],
               ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AllPlantsScreen(),
-                    ),
-                  );
-                },
-                child: Row(
-                  children: [
-                    const Text(
-                      "View All",
-                      style: TextStyle(
-                        color: Color(0xFF609254),
-                        fontSize: 14,
-                        fontFamily: 'Laila',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Icon(
-                      Icons.arrow_forward,
-                      color: const Color(0xFF609254),
-                      size: 16,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
         SizedBox(
@@ -761,9 +633,9 @@ class _HomeContentState extends State<HomeContent> {
             future: _plantsFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const  Center(
+                return const Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(16.0),
                     child: RotatingLogoLoader(
                       logoAssetPath: 'assets/logo.png',
                       size: 50,
@@ -789,29 +661,15 @@ class _HomeContentState extends State<HomeContent> {
                 );
               }
 
-              // Apply filter
-              final filteredPlants = _filterPlants(snapshot.data!);
-              print('Filtered plants: ${filteredPlants.length}'); // Debug log
-
-              if (filteredPlants.isEmpty) {
-                return const Center(
-                  child: Text(
-                    'No plants available for this filter.',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
-                  ),
-                );
-              }
+              final plants = snapshot.data!.take(10).toList(); // Take first 10 plants
 
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: filteredPlants.length,
+                itemCount: plants.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 8.0),
-                    child: _growItem(filteredPlants[index]),
+                    child: _growItem(plants[index]),
                   );
                 },
               );
@@ -825,7 +683,6 @@ class _HomeContentState extends State<HomeContent> {
   Widget _growItem(Plant plant) {
     return GestureDetector(
       onTap: () {
-        // Navigate to PlantDetailScreen when the plant is tapped
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -864,8 +721,7 @@ class _HomeContentState extends State<HomeContent> {
                   clipBehavior: Clip.antiAlias,
                   decoration: ShapeDecoration(
                     shape: RoundedRectangleBorder(
-                      side: const BorderSide(
-                          width: 0.10, color: Color(0xFF4C2B12)),
+                      side: const BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(30),
                         topRight: Radius.circular(30),
@@ -883,16 +739,12 @@ class _HomeContentState extends State<HomeContent> {
                         decoration: ShapeDecoration(
                           image: DecorationImage(
                             image: plant.imageUrls.isNotEmpty
-                                ? CachedNetworkImageProvider(
-                                plant.imageUrls.first)
-                                : const AssetImage(
-                                'assets/placeholder_plant.png')
-                            as ImageProvider,
+                                ? CachedNetworkImageProvider(plant.imageUrls.first)
+                                : const AssetImage('assets/placeholder_plant.png') as ImageProvider,
                             fit: BoxFit.cover,
                           ),
                           shape: RoundedRectangleBorder(
-                            side: const BorderSide(
-                                width: 0.10, color: Color(0xFF4C2B12)),
+                            side: const BorderSide(width: 0.10, color: Color(0xFF4C2B12)),
                           ),
                         ),
                       ),
@@ -924,23 +776,19 @@ class _HomeContentState extends State<HomeContent> {
                                 child: Center(
                                   child: Container(
                                     width: 90,
-                                    // Matching the size of the previous image
                                     height: 90,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(
                                         color: Color(0xffc3824d),
-                                        // Circle border color
-                                        width: 5.2, // Thickness of the circle
+                                        width: 5.2,
                                       ),
                                     ),
                                     child: const Center(
                                       child: Icon(
                                         Icons.check,
                                         color: Color(0xffc3824d),
-                                        // Checkmark color
-                                        size:
-                                        70, // Adjust size of the checkmark
+                                        size: 70,
                                       ),
                                     ),
                                   ),
@@ -960,7 +808,7 @@ class _HomeContentState extends State<HomeContent> {
                           ),
                         );
                       },
-                    ); // Add functionality for the "+" button
+                    );
                   },
                   child: Container(
                     width: 15,
@@ -1014,8 +862,7 @@ class _HomeContentState extends State<HomeContent> {
                                       decoration: ShapeDecoration(
                                         color: const Color(0xFFEEF0E2),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                          BorderRadius.circular(2),
+                                          borderRadius: BorderRadius.circular(2),
                                         ),
                                       ),
                                     ),
@@ -1060,16 +907,13 @@ class _HomeContentState extends State<HomeContent> {
             const Text(
               "Camapaign",
               style: TextStyle(
-                  fontSize: 19,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xff392515)),
+                  fontSize: 19, fontWeight: FontWeight.bold, color: Color(0xff392515)),
             ),
             GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const CommunityPage()),
+                  MaterialPageRoute(builder: (context) => const CommunityPage()),
                 );
               },
               child: Row(
@@ -1103,7 +947,7 @@ class _HomeContentState extends State<HomeContent> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(16.0),
                     child: RotatingLogoLoader(
                       logoAssetPath: 'assets/logo.png',
                       size: 50,

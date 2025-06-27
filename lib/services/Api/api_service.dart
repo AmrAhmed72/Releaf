@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../data/Shared_Prefs/Shared_Prefs.dart';
-import '../models/campaign.dart';
-import '../models/category.dart';
-import '../models/plant.dart';
+import '../../data/Shared_Prefs/Shared_Prefs.dart';
+import '../../models/campaign.dart';
+import '../../models/category.dart';
+import '../../models/plant.dart';
 
 
 class ApiService {

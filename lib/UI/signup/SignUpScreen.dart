@@ -3,7 +3,7 @@ import 'package:releaf/UI/Home/homepage.dart';
 import 'package:releaf/UI/signup/LogInPage.dart';
 
 import '../../data/Shared_Prefs/Shared_Prefs.dart';
-import '../../services/api_service.dart';
+import '../../services/Api/api_service.dart';
 
 
 class SignUpScreen extends StatefulWidget {

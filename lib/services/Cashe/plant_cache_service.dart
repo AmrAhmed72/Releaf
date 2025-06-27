@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/plant.dart';
+import '../../models/plant.dart';
 
 class PlantCacheService {
   static const String _plantsKey = 'cached_plants';

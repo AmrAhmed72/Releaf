@@ -9,8 +9,8 @@ class SharedPrefs {
   static const String _keyRefreshToken = 'refreshToken';
   static const String _keyExpiresIn = 'expiresIn';
   static const String _keyTokenType = 'tokenType';
+  static const String _keyRecentSearches = 'recentSearches';
 
-  // Save profile data
   static Future<void> saveProfileData(Map<String, String?> details) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyName, details['name'] ?? '');
@@ -23,7 +23,6 @@ class SharedPrefs {
     }
   }
 
-  // Load profile data
   static Future<Map<String, String?>> loadProfileData() async {
     final prefs = await SharedPreferences.getInstance();
     return {
@@ -34,7 +33,6 @@ class SharedPrefs {
     };
   }
 
-  // Save authentication tokens
   static Future<void> saveAuthTokens({
     required String accessToken,
     required String refreshToken,
@@ -48,7 +46,6 @@ class SharedPrefs {
     await prefs.setString(_keyTokenType, tokenType);
   }
 
-  // Load authentication tokens
   static Future<Map<String, dynamic>> loadAuthTokens() async {
     final prefs = await SharedPreferences.getInstance();
     return {
@@ -59,13 +56,11 @@ class SharedPrefs {
     };
   }
 
-  // Check if user is logged in (has valid tokens)
   static Future<bool> isLoggedIn() async {
     final tokens = await loadAuthTokens();
     return tokens['accessToken'] != null && tokens['tokenType'] != null;
   }
 
-  // Clear all data (for logout or reset)
   static Future<void> clearAllData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyName);
@@ -76,5 +71,21 @@ class SharedPrefs {
     await prefs.remove(_keyRefreshToken);
     await prefs.remove(_keyExpiresIn);
     await prefs.remove(_keyTokenType);
+    await prefs.remove(_keyRecentSearches);
+  }
+
+  static Future<void> saveRecentSearches(List<String> searches) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_keyRecentSearches, searches);
+  }
+
+  static Future<List<String>> loadRecentSearches() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList(_keyRecentSearches) ?? [];
+  }
+
+  static Future<void> clearRecentSearches() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_keyRecentSearches);
   }
 }

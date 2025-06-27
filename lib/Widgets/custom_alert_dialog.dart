@@ -28,7 +28,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> with SingleTicker
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 350),
       vsync: this,
     );
     _scaleAnimation = CurvedAnimation(

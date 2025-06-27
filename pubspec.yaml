@@ -99,6 +99,43 @@ flutter_native_splash:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
+    - family: Plus Jakarta Sans
+      fonts:
+      - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-Regular.ttf
+        weight: 400
+      - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-Italic.ttf
+        weight: 400
+        style: italic
+      - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-ExtraLight.ttf
+        weight: 200
+      - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-ExtraLightItalic.ttf
+        weight: 200
+        style: italic
+      - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-Light.ttf
+        weight: 300
+      - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-LightItalic.ttf
+        weight: 300
+        style: italic
+      - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-Medium.ttf
+        weight: 500
+      - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-MediumItalic.ttf
+        weight: 500
+        style: italic
+      - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-SemiBold.ttf
+        weight: 600
+      - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-SemiBoldItalic.ttf
+        weight: 600
+        style: italic
+      - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-Bold.ttf
+        weight: 700
+      - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-BoldItalic.ttf
+        weight: 700
+        style: italic
+      - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-ExtraBold.ttf
+        weight: 800
+      - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-ExtraBoldItalic.ttf
+        weight: 800
+        style: italic
     - family: LailaFont
       fonts:
         - asset: assets/fonts/Laila-Regular.ttf

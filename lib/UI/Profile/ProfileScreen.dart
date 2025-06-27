@@ -4,6 +4,7 @@ import 'package:releaf/UI/Profile/CommunityScreen.dart';
 import 'package:releaf/UI/Profile/SettingScreen.dart';
 import 'package:releaf/UI/Profile/EditProfileScreen.dart';
 
+import '../../ChatBot/screens/plant_expert_screen.dart';
 import '../../data/Shared_Prefs/Shared_Prefs.dart';
 
 
@@ -201,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                        MaterialPageRoute(builder: (context) =>  const SettingsScreen()),
                       );
                     },
                   ),
@@ -213,6 +214,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const CommunityPage()),
+                      );
+                    },
+                  ), _buildActionButton(
+                    icon: Icons.chat,
+                    title: 'ChatBot',
+                    subtitle: 'Ask AI any thing about plants',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => PlantExpertScreen()),
                       );
                     },
                   ),

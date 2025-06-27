@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../Widgets/custom_alert_dialog.dart';
 import '../../../Widgets/loaders/rotating_logo_loader.dart';
 import '../../../models/plant.dart';
-import '../../../services/growing_plants_service.dart';
+import '../../my garden/grawing/growing_plants_service.dart';
 import '../../my garden/planning/planned_plants.dart';
 
 class PlantDetailScreen extends StatelessWidget {
@@ -211,7 +211,7 @@ class PlantDetailScreen extends StatelessWidget {
                           context: context,
                           builder: (BuildContext context) {
                             return const CustomAlertDialog(
-                              title: 'Add to planning',
+                              title: 'Added to planning',
                               icon: Icons.check,
                             );
                           },
@@ -247,7 +247,7 @@ class PlantDetailScreen extends StatelessWidget {
                           context: context,
                           builder: (BuildContext context) {
                             return const CustomAlertDialog(
-                              title: 'Already Growing',
+                              title: 'Already in Growing',
                               icon: Icons.info,
                             );
                           },
@@ -259,7 +259,7 @@ class PlantDetailScreen extends StatelessWidget {
                           context: context,
                           builder: (BuildContext context) {
                             return const CustomAlertDialog(
-                              title: 'Add to Growing',
+                              title: 'Added to Growing',
                               icon: Icons.check,
                             );
                           },

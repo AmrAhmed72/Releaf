@@ -7,7 +7,7 @@ import '../../models/plant.dart';
 import 'grawing/grawing card.dart';
 import 'grawing/grawing_plants.dart';
 import 'planning/plan_card.dart';
-import '../../services/growing_plants_service.dart'; // Added import
+import 'grawing/growing_plants_service.dart'; // Added import
 
 class MyGarden extends StatefulWidget {
   const MyGarden({super.key});
