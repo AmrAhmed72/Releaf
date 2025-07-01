@@ -27,6 +27,8 @@
 - 📚 **Educational Resources**  
   Learn about the environmental benefits of afforestation, tree types, and planting techniques.
 
+  ---
+
 ## 🧠 Technologies Used
 
 - **Flutter (Dart)** – Cross-platform mobile app development  
@@ -41,7 +43,7 @@
 - **HTTP Package** – RESTful API communication for fetching environmental and plant data  
 
 
----
+
 
 ---
 
