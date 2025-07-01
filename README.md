@@ -27,15 +27,19 @@
 - 📚 **Educational Resources**  
   Learn about the environmental benefits of afforestation, tree types, and planting techniques.
 
-  ## 🧠 Technologies Used
+## 🧠 Technologies Used
 
-- **Flutter (Dart)** – Cross-platform app development
-- **Google Maps API** – Location and map interaction
-- **OpenWeatherMap API** – Weather and climate data
-- **Machine Learning** – Plant identification and disease detection
-- **Firebase** – Authentication and storage
-- **WAQI** – Air quality data integration
-- **Dialogflow / Custom Chatbot Engine** – Real-time user assistance
+- **Flutter (Dart)** – Cross-platform mobile app development  
+- **Google Maps API** – Location and map-based interaction  
+- **OpenWeatherMap API** – Weather and climate condition data  
+- **WAQI API** – Air quality data for environment analysis  
+- **Machine Learning** – Plant identification and disease detection  
+- **Firebase** – Authentication and cloud storage  
+- **Dialogflow / Custom Chatbot Engine** – Real-time support for planting guidance  
+- **SharedPreferences** – Local storage for saving user preferences and garden data  
+- **BLoC (Business Logic Component)** – State management for scalable and maintainable code  
+- **HTTP Package** – RESTful API communication for fetching environmental and plant data  
+
 
 ---
 
