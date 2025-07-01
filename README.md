@@ -27,3 +27,49 @@
 - 📚 **Educational Resources**  
   Learn about the environmental benefits of afforestation, tree types, and planting techniques.
 
+  ## 🧠 Technologies Used
+
+- **Flutter (Dart)** – Cross-platform app development
+- **Google Maps API** – Location and map interaction
+- **OpenWeatherMap API** – Weather and climate data
+- **Machine Learning** – Plant identification and disease detection
+- **Firebase** – Authentication and storage
+- **WAQI** – Air quality data integration
+- **Dialogflow / Custom Chatbot Engine** – Real-time user assistance
+
+---
+
+---
+
+## 🧪 Future Enhancements
+
+- Add voice input for the chatbot  
+- Expand plant and environmental databases  
+- Improve disease detection accuracy  
+- Track plant health using time-series images  
+- Add multi-language support  
+
+---
+
+## 💚 Contributing
+
+Contributions are welcome! Feel free to fork this repository, open an issue, or submit a pull request to help improve the project.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🌍 Credits
+
+- [OpenWeatherMap](https://openweathermap.org/api) – Weather & climate data  
+- [WAQI](https://waqi.info/) – Air quality data  
+- [PlantNet](https://identify.plantnet.org/) – Inspiration for plant identification  
+- Designed and developed as part of a graduation project focused on increasing green spaces in **Egypt**.
+
+
+
+
