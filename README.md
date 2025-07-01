@@ -1,4 +1,4 @@
-# 🌱 Releaf – Smart Tree Planting App
+# 🌱 Releaf
 
 **Releaf** is a mobile application designed to promote afforestation and environmental awareness through the power of technology. It helps users identify suitable planting areas, select the right tree species, detect plant types, and receive planting guidance using AI, digital maps, and chatbot support.
 
