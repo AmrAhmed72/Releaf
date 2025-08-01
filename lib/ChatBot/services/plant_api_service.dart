@@ -24,14 +24,14 @@ IMPORTANT: Do not use any Markdown formatting in your responses. Do not use aste
   static String cleanResponseText(String text) {
     // Remove Markdown formatting for bold/italic (asterisks)
     String cleaned = text.replaceAll(RegExp(r'\*{1,3}'), '');
-    
+
     // Remove Markdown formatting for italic (underscores)
     cleaned = cleaned.replaceAll(RegExp(r'_{1,3}'), '');
-    
+
     // Remove other Markdown elements as needed
     cleaned = cleaned.replaceAll(RegExp(r'#{1,6}\s'), ''); // Headers
     cleaned = cleaned.replaceAll(RegExp(r'`{1,3}'), ''); // Code blocks
-    
+
     return cleaned;
   }
 
@@ -63,7 +63,8 @@ IMPORTANT: Do not use any Markdown formatting in your responses. Do not use aste
             jsonData['candidates'].isNotEmpty &&
             jsonData['candidates'][0].containsKey('content') &&
             jsonData['candidates'][0]['content']['parts'].isNotEmpty) {
-          String responseText = jsonData['candidates'][0]['content']['parts'][0]['text'];
+          String responseText =
+              jsonData['candidates'][0]['content']['parts'][0]['text'];
           // Clean the response text before returning
           return cleanResponseText(responseText);
         } else {
